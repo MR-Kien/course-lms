@@ -18,13 +18,13 @@
   inset: -3px; /* dày viền */
   z-index: -1;
   background: linear-gradient(
-    90deg,
-    #fa0101,
-    #a10101,
-    #ffffff,
-    #a10101,
-    #fa0101
-  );
+  90deg,
+  #1e3a8a, /* blue-900 */
+  #2563eb, /* blue-600 */
+  #ffffff, /* white */
+  #2563eb, /* blue-600 */
+  #1e3a8a  /* blue-900 */
+);
   background-size: 400% 400%;
   animation: rotate-border 3s linear infinite;
   border-radius: 0.5rem;

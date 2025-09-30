@@ -6,18 +6,21 @@ import Sidebar from "../components/Sidebar/Sidebar";
 import Header from "../components/Header/Header";
 import PropTypes from "prop-types";
 import LoadingOverlay from "../components/LoadingOverlay/LoadingOverlay";
-import NotificationPanel from "../components/NotificationPanel";
+// import NotificationPanel from "../components/NotificationPanel";
 
 const DashboardLayout = ({ children }) => {
   return (
     <>
-      <div className="flex">
-        <Sidebar />
-        <div className="flex-1 flex flex-col min-h-screen bg-gray-100">
-          <Header />
+      <div className="min-h-screen flex flex-col bg-gray-100">
+        {/* Header luôn full chiều ngang */}
+        <Header />
+
+        {/* Bên dưới header chia làm 2 cột: sidebar + nội dung */}
+        <div className="flex flex-1">
+          <Sidebar />
           <main className="flex-1 p-4">
             <LoadingOverlay />
-            <NotificationPanel />
+            {/* <NotificationPanel /> */}
             {children}
           </main>
         </div>

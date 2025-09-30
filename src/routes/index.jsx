@@ -14,7 +14,7 @@ import RequiredPermission from "../components/RequiredPermission";
 import { ENDPOINTS } from "./endPoints";
 import LandingLayout from "../layouts/LandingLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
-const WEB_NAME = "LozoAcademy";
+const WEB_NAME = "Learnly";
 
 const RequiredAuth = ({ children, path }) => {
   const location = useLocation();
@@ -82,6 +82,14 @@ const signinSuccessPage = {
   title: `Sign In | ${WEB_NAME}`,
   Layout: LandingLayout,
 };
+const userdashboardPage = {
+  path: ENDPOINTS.USER.DASHBOARD,
+  component: lazy(() =>
+    delayRoute()(import("../modules/user_dashboard/features/index"))
+  ),
+  title: `Dashboard | ${WEB_NAME}`,
+  Layout: DashboardLayout,
+};
 
 // Các trang khác sẽ được thêm vào đây
 export const privateRouteData = [];
@@ -91,6 +99,7 @@ export const publicRoutesData = [
   forgotPasswordPage,
   signinpage,
   signinSuccessPage,
+  userdashboardPage,
 ];
 
 // Improved route rendering function

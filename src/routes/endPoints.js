@@ -6,5 +6,7 @@ export const ENDPOINTS = Object.freeze({
     SIGNIN_SUCCESS: "/signin-success",
   },
   INDEX: "/",
-  USER: {},
+  USER: {
+    DASHBOARD: "/dashboard",
+  },
 });

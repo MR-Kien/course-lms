@@ -1,171 +1,69 @@
-// // import { useState } from "react";
-// import { ENDPOINTS } from "../../routes/endPoints";
-// import { Link, useLocation } from "react-router-dom";
-
-// import {
-//   Home,
-//   Users,
-//   TestTube,
-//   UserCheck,
-//   Shield,
-//   FileText,
-// } from "lucide-react";
-
-// export default function Sidebar() {
-//   const location = useLocation(); // để biết route hiện tại
-
-//   const sidebarItems = [
-//     { icon: Home, label: "Dashboard", to: ENDPOINTS.USER.DASHBOARD },
-//     { icon: TestTube, label: "Test Order", to: ENDPOINTS.USER.TESTORDERS },
-//     { icon: Users, label: "Users", to: ENDPOINTS.USER.USERS },
-//     { icon: UserCheck, label: "Patient", to: ENDPOINTS.USER.PATIENTS },
-//     { icon: Shield, label: "Role", to: ENDPOINTS.USER.ROLES },
-//     { icon: FileText, label: "Log", to: ENDPOINTS.USER.LOG },
-//   ];
-
-//   return (
-//     <div className="flex h-screen bg-white">
-//       {/* Sidebar */}
-//       <div className="w-[250px] bg-white border-r border-gray-200 flex flex-col">
-//         {/* Logo */}
-//         <div className="flex flex-col items-center md:items-start pl-8">
-//           <img
-//             src="https://c.animaapp.com/JykgXKim/img/blood-donation-icon-png-5@2x.png"
-//             alt="Logo"
-//             className="w-[100px] h-[100px]"
-//           />
-//         </div>
-
-//         {/* Navigation */}
-//         <nav className="flex-1 px-4 py-6">
-//           <ul className="space-y-2">
-//             {sidebarItems.map((item, index) => {
-//               const isActive = location.pathname === item.to;
-
-//               return (
-//                 <li key={index}>
-//                   <Link
-//                     to={item.to}
-//                     className={`flex items-center px-4 py-3 rounded-lg text-lg transition-colors relative ${
-//                       isActive
-//                         ? "text-red-600 bg-red-50"
-//                         : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-//                     }`}
-//                   >
-//                     {isActive && (
-//                       <div className="absolute left-0 top-0 w-1.5 h-full bg-red-600 rounded-r-lg"></div>
-//                     )}
-//                     <item.icon className="w-6 h-6 mr-4" />
-//                     {item.label}
-//                   </Link>
-//                 </li>
-//               );
-//             })}
-//           </ul>
-//         </nav>
-//       </div>
-//     </div>
-//   );
-// }
-import { ENDPOINTS } from "../../routes/endPoints";
-import { Link, useLocation } from "react-router-dom";
 import {
-  Home,
-  Users,
-  TestTube,
-  UserCheck,
-  Shield,
-  FileText,
+  Menu,
+  BookOpen,
+  CreditCard,
+  MessageCircle,
+  Calendar,
+  Settings,
+  LogOut,
+  GraduationCap,
 } from "lucide-react";
 
 export default function Sidebar() {
-  const location = useLocation();
-
-  // Lấy thông tin người dùng và phân quyền từ localStorage
-  const user = JSON.parse(localStorage.getItem("user"));
-  const userPrivileges = user?.scope?.split(" ") || [];
-
-  // Danh sách sidebar cùng với quyền tương ứng (nếu có)
-  const sidebarItems = [
-    { icon: Home, label: "Dashboard", to: ENDPOINTS.USER.DASHBOARD },
-    {
-      icon: TestTube,
-      label: "Test Order",
-      to: ENDPOINTS.USER.TESTORDERS,
-      permission: "READ_TEST_ORDER",
-    },
-    {
-      icon: Users,
-      label: "Users",
-      to: ENDPOINTS.USER.USERS,
-      permission: "VIEW_USER",
-    },
-    {
-      icon: UserCheck,
-      label: "Patient",
-      to: ENDPOINTS.USER.PATIENTS,
-      permission: "VIEW_PATIENT",
-      // permission: "VIEW_PATIENT",
-    },
-    {
-      icon: Shield,
-      label: "Role",
-      to: ENDPOINTS.USER.ROLES,
-      permission: "VIEW_ROLE",
-    },
-    {
-      icon: FileText,
-      label: "Log",
-      to: ENDPOINTS.USER.LOG,
-      permission: "READ_LOG",
-    },
-  ];
-
-  // Chỉ hiển thị các mục mà người dùng có quyền hoặc không yêu cầu quyền
-  const filteredSidebarItems = sidebarItems.filter(
-    (item) => !item.permission || userPrivileges.includes(item.permission)
-  );
-
   return (
-    <div className="flex h-screen bg-white">
-      <div className="w-[250px] bg-white border-r border-gray-200 flex flex-col">
+    <aside className="w-[317px] bg-blue-600 shadow-2xl rounded-r-[14px] h-full overflow-y-auto">
+      <div className="p-6">
         {/* Logo */}
-        <div className="flex flex-col items-center md:items-start pl-8">
-          <img
-            src="https://c.animaapp.com/JykgXKim/img/blood-donation-icon-png-5@2x.png"
-            alt="Logo"
-            className="w-[100px] h-[100px]"
-          />
+        <div className="mb-8">
+          <div className="flex items-center gap-3">
+            <GraduationCap
+              className="w-9 h-9 text-blue-600"
+              strokeWidth={2.67}
+            />
+            <h1 className="text-2xl font-bold text-black">Learnly</h1>
+          </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-6">
-          <ul className="space-y-2">
-            {filteredSidebarItems.map((item, index) => {
-              const isActive = location.pathname === item.to;
+        <nav className="space-y-6">
+          <div className="flex items-center gap-4 p-3 bg-white/10 rounded-full">
+            <Menu className="w-10 h-10 text-white" />
+            <span className="text-2xl font-bold text-white">
+              Bảng điều khiển
+            </span>
+          </div>
 
-              return (
-                <li key={index}>
-                  <Link
-                    to={item.to}
-                    className={`flex items-center px-4 py-3 rounded-lg text-lg transition-colors relative ${
-                      isActive
-                        ? "text-red-600 bg-red-50"
-                        : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-                    }`}
-                  >
-                    {isActive && (
-                      <div className="absolute left-0 top-0 w-1.5 h-full bg-red-600 rounded-r-lg"></div>
-                    )}
-                    <item.icon className="w-6 h-6 mr-4" />
-                    {item.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+          <div className="flex items-center gap-4 p-3 hover:bg-white/10 rounded-lg">
+            <BookOpen className="w-9 h-9 text-white" strokeWidth={2.67} />
+            <span className="text-2xl font-bold text-white">Khóa học</span>
+          </div>
+
+          <div className="flex items-center gap-4 p-3 hover:bg-white/10 rounded-lg">
+            <CreditCard className="w-9 h-9 text-white" strokeWidth={1.33} />
+            <span className="text-2xl font-bold text-white">Giao dịch</span>
+          </div>
+
+          <div className="flex items-center gap-4 p-3 hover:bg-white/10 rounded-lg">
+            <MessageCircle className="w-9 h-9 text-white" strokeWidth={0.67} />
+            <span className="text-2xl font-bold text-white">Chat</span>
+          </div>
+
+          <div className="flex items-center gap-4 p-3 hover:bg-white/10 rounded-lg">
+            <Calendar className="w-9 h-9 text-white" strokeWidth={1.33} />
+            <span className="text-2xl font-bold text-white">Lịch</span>
+          </div>
+
+          <div className="flex items-center gap-4 p-3 hover:bg-white/10 rounded-lg">
+            <Settings className="w-9 h-9 text-white" strokeWidth={1.33} />
+            <span className="text-2xl font-bold text-white">Cài đặt</span>
+          </div>
+
+          <div className="flex items-center gap-4 p-3 hover:bg-white/10 rounded-lg cursor-pointer mt-32">
+            <LogOut className="w-13 h-13 text-white" />
+            <span className="text-3xl font-bold text-white">Đăng xuất</span>
+          </div>
         </nav>
       </div>
-    </div>
+    </aside>
   );
 }
