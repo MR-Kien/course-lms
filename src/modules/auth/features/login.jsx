@@ -303,9 +303,12 @@ const Login = () => {
           {/* Register link */}
           <p className="text-center text-sm mt-5">
             Bạn chưa có tài khoản?{" "}
-            <a href="#" className="text-blue-600 font-semibold hover:underline">
+            <Link
+              to={ENDPOINTS.AUTH.SIGNIN}
+              className="text-blue-600 font-semibold hover:underline"
+            >
               Đăng ký ngay
-            </a>
+            </Link>
           </p>
         </form>
       </div>

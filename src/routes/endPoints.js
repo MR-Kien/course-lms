@@ -8,5 +8,7 @@ export const ENDPOINTS = Object.freeze({
   INDEX: "/",
   USER: {
     DASHBOARD: "/dashboard",
+    CHECKOUT: "/checkout",
+    PRICING: "/pricing",
   },
 });

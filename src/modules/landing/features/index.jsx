@@ -79,7 +79,10 @@ export default function Landing() {
               >
                 Đăng nhập
               </button>
-              <button className="text-white bg-[#32B7FF] hover:bg-blue-700 px-4 py-2 rounded-full text-sm font-medium transition">
+              <button
+                className="text-white bg-[#32B7FF] hover:bg-blue-700 px-4 py-2 rounded-full text-sm font-medium transition"
+                onClick={() => navigate("/signin")}
+              >
                 Đăng ký
               </button>
             </div>
@@ -110,6 +113,7 @@ export default function Landing() {
               <button
                 size="lg"
                 className="bg-blue-600 rounded-full shadow-md hover:bg-blue-700 px-8 py-3 text-white flex items-center text-lg font-medium"
+                onClick={() => navigate("/login")}
               >
                 Bắt đầu Học miễn phí →
               </button>

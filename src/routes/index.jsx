@@ -91,6 +91,22 @@ const userdashboardPage = {
   Layout: DashboardLayout,
 };
 
+const checkoutPage = {
+  path: ENDPOINTS.USER.CHECKOUT,
+  component: lazy(() =>
+    delayRoute()(import("../modules/checkout/features/index"))
+  ),
+  title: `Checkout | ${WEB_NAME}`,
+  Layout: DashboardLayout,
+};
+const pricingPage = {
+  path: ENDPOINTS.USER.PRICING,
+  component: lazy(() =>
+    delayRoute()(import("../modules/pricing/features/index"))
+  ),
+  title: `Pricing | ${WEB_NAME}`,
+  Layout: DashboardLayout,
+};
 // Các trang khác sẽ được thêm vào đây
 export const privateRouteData = [];
 export const publicRoutesData = [
@@ -100,6 +116,8 @@ export const publicRoutesData = [
   signinpage,
   signinSuccessPage,
   userdashboardPage,
+  checkoutPage,
+  pricingPage,
 ];
 
 // Improved route rendering function
