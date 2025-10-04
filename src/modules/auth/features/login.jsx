@@ -106,6 +106,7 @@
 // }
 import robot from "../../../assets/images/robot.png";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { ENDPOINTS } from "../../../routes/endPoints";
 import { GraduationCapIcon } from "lucide-react";
@@ -113,6 +114,7 @@ import { toast } from "react-toastify";
 import "../styles/animated-border.css";
 import { FaFacebook, FaGoogle } from "react-icons/fa";
 const Login = () => {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -130,6 +132,7 @@ const Login = () => {
       });
       return;
     }
+    navigate(ENDPOINTS.USER.DASHBOARD);
   };
 
   return (

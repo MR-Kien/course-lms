@@ -44,31 +44,31 @@ export default function Landing() {
                 href="#"
                 className="text-gray-700 hover:text-blue-600 font-medium"
               >
-                Trang chủ
-              </a>
-              <a
-                href="#"
-                className="text-gray-700 hover:text-blue-600 font-medium"
-              >
-                Giới thiệu
-              </a>
-              <a 
-                href="/courses"
-                className="text-gray-700 hover:text-blue-600 font-medium"
-              >
                 Khóa học
               </a>
               <a
                 href="#"
                 className="text-gray-700 hover:text-blue-600 font-medium"
               >
-                Tin tức
+                Chat với AI
               </a>
-              <a
-                href="#"
+              <a 
+                href="/courses"
                 className="text-gray-700 hover:text-blue-600 font-medium"
               >
-                Liên hệ
+                Đổi thưởng
+              </a>
+              <a
+                href="/chatbot"
+                className="text-gray-700 hover:text-blue-600 font-medium"
+              >
+                Nâng cấp gói
+              </a>
+              <a
+                href="/news"
+                className="text-gray-700 hover:text-blue-600 font-medium"
+              >
+                Tin tức
               </a>
             </nav>
 
