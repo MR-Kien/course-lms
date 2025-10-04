@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function ProfileEdit() {
   const navigate = useNavigate();
-  const [editData, setEditData] = useState<UserData>({
+  const [editData, setEditData] = useState({
     hoTen: "Bùi Minh Hiếu",
     ngaySinh: "20 - 07 - 2004",
     dienThoai: "0783624814",

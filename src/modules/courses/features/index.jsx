@@ -1,137 +1,84 @@
-// import { Card, CardContent } from "../../../components/ui/card";
-// import { Badge } from "../../../components/ui/badge";
-// import { Button } from "../../../components/ui/button";
-// import { Progress } from "@/components/ui/progress";
-// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
-  BookOpen, 
-  Clock, 
-  Trophy,  
-  Play,
-  ChevronRight,
-  Award,
-  Calculator,
-  Globe,
-  Beaker,
-  BookText,
-  MapPin,
-  Computer,
-  History,
-  Wrench
-} from "lucide-react";
-// import { CardContent } from "../../landing/components/Card";
-// import { Button } from "antd";
-// import { Avatar } from "../../landing/components/Avatar";
+import { Home, BookOpen, MessageSquare, Gift, Newspaper, ArrowLeft, Calculator, Languages, Atom, MapPin, FileText, Clock, Wrench, TrendingUp, Clock3, Target, BarChart3 } from 'lucide-react';
 
 export default function Index() {
   const subjects = [
-    { id: 1, name: "Toán học", icon: Calculator, color: "bg-blue-500", lessons: "12 bài" },
-    { id: 2, name: "Tiếng Anh", icon: Globe, color: "bg-green-500", lessons: "18 bài" },
-    { id: 3, name: "Khoa học", icon: Beaker, color: "bg-purple-500", lessons: "8 bài" },
-    { id: 4, name: "Văn học", icon: BookText, color: "bg-orange-500", lessons: "9 bài" },
-    { id: 5, name: "Địa lý", icon: MapPin, color: "bg-teal-500", lessons: "7 bài" },
-    { id: 6, name: "Tin học", icon: Computer, color: "bg-pink-500", lessons: "6 bài" },
-    { id: 7, name: "Lịch sử", icon: History, color: "bg-indigo-500", lessons: "5 bài" },
-    { id: 8, name: "Công nghệ", icon: Wrench, color: "bg-red-500", lessons: "4 bài" }
+    { name: 'Toán học', lessons: '12 chủ đề', icon: Calculator, color: 'bg-blue-500' },
+    { name: 'Tiếng Anh', lessons: '10 chủ đề', icon: Languages, color: 'bg-emerald-500' },
+    { name: 'Khoa học', lessons: '8 chủ đề', icon: Atom, color: 'bg-purple-500' },
+    { name: 'Vật lý', lessons: '8 chủ đề', icon: Atom, color: 'bg-orange-500' },
+    { name: 'Địa lý', lessons: '7 chủ đề', icon: MapPin, color: 'bg-teal-500' },
+    { name: 'Tin học', lessons: '9 chủ đề', icon: FileText, color: 'bg-pink-500' },
+    { name: 'Lịch sử', lessons: '6 chủ đề', icon: Clock, color: 'bg-indigo-500' },
+    { name: 'Công nghệ', lessons: '6 chủ đề', icon: Wrench, color: 'bg-red-500' },
   ];
 
   const lessons = [
-    {
-      id: 1,
-      title: "Giải thiếu về so sánh số",
-      duration: "15 phút",
-      status: "completed",
-      image: "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=100&h=100&fit=crop&crop=face"
-    },
-    {
-      id: 2,
-      title: "So sánh số nguyên",
-      duration: "20 phút", 
-      status: "completed",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face"
-    },
-    {
-      id: 3,
-      title: "So sánh phân số",
-      duration: "25 phút",
-      status: "premium",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b332446c?w=100&h=100&fit=crop&crop=face"
-    },
-    {
-      id: 4,
-      title: "Bài tập thực hành",
-      duration: "30 phút",
-      status: "locked",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
-    }
+    { id: 1, title: 'Giải thích về so sánh số', duration: '15 phút', status: 'completed', image: 'https://api.builder.io/api/v1/image/assets/TEMP/avatar1?width=60' },
+    { id: 2, title: 'So sánh số nguyên', duration: '20 phút', status: 'completed', image: 'https://api.builder.io/api/v1/image/assets/TEMP/avatar2?width=60' },
+    { id: 3, title: 'So sánh phân số', duration: '25 phút', status: 'premium', image: 'https://api.builder.io/api/v1/image/assets/TEMP/avatar3?width=60' },
+    { id: 4, title: 'Bài tập thực hành', duration: '30 phút', status: 'locked', image: 'https://api.builder.io/api/v1/image/assets/TEMP/avatar4?width=60' },
   ];
 
-  const practiceTests = [
-    {
-      id: 1,
-      title: "Kiểm tra cơ bản",
-      questions: "10 câu hỏi",
-      status: "available",
-      difficulty: "Dễ"
-    },
-    {
-      id: 2,
-      title: "Kiểm tra nâng cao",
-      questions: "15 câu hỏi", 
-      status: "premium",
-      difficulty: "Khó"
-    }
+  const activities = [
+    { title: 'So sánh kích th...', time: '5chu đề', progress: 75, type: 'exam' },
+    { title: 'Phép cộng và p...', time: '4chu đề', progress: 100, type: 'practice' },
+    { title: 'Hình học kh...', time: '6 chu đề', progress: 25, type: 'lesson' },
+    { title: 'Phương trình...', time: '7 chu đề', progress: 0, type: 'exam' },
+    { title: 'Đại số cơ bản', time: '3 chu đề', progress: 50, type: 'lesson' },
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <div className="flex items-center space-x-8">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <BookOpen className="w-5 h-5 text-white" />
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-8">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                  <BookOpen className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-xl font-bold text-gray-900">Learnly</span>
               </div>
-              <span className="text-xl font-bold text-gray-900">Learnly</span>
+              <nav className="hidden md:flex items-center gap-6">
+                <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>Quay lại</span>
+                </button>
+                <a href="#" className="text-gray-900 font-medium">Khóa học</a>
+                <a href="#" className="text-gray-600 hover:text-gray-900">Chat với AI</a>
+                <a href="#" className="text-gray-600 hover:text-gray-900">Phần thưởng</a>
+                <a href="#" className="text-gray-600 hover:text-gray-900">Tin tức</a>
+              </nav>
             </div>
-            
-            <nav className="hidden md:flex items-center space-x-6">
-              <button className="text-gray-600 hover:text-gray-900 font-medium">Quay lại</button>
-              <button className="text-gray-600 hover:text-gray-900 font-medium">Khóa học</button>
-              <button className="text-blue-600 font-medium border-b-2 border-blue-600 pb-1">Chat với AI</button>
-              <button className="text-gray-600 hover:text-gray-900 font-medium">Phần thưởng</button>
-              <button className="text-gray-600 hover:text-gray-900 font-medium">Tin tức</button>
-            </nav>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg">
-              Nâng cấp
-            </button>
-            <img className="w-10 h-10 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" alt="PN" />
-            <span className="hidden md:block text-sm font-medium text-gray-700">Phạm Nguyễn Na Na</span>
+            <div className="flex items-center gap-4">
+              <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                Nâng cấp
+              </button>
+              <button className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium">
+                NN
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 py-6">
-        {/* Welcome Banner */}
-        <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-purple-700 rounded-2xl p-6 mb-8 text-white">
-          <div className="flex items-center justify-between">
+      {/* Welcome Banner */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold mb-2">Chào mừng bạn trở lại, Na Na!</h1>
+              <h1 className="text-2xl md:text-3xl font-bold mb-2">Chào mừng bạn trở lại, Na Na!</h1>
               <p className="text-blue-100">Hãy tiếp tục hành trình học tập của bạn</p>
             </div>
-            
-            <div className="flex items-center space-x-8">
+            <div className="flex gap-6">
               <div className="text-center">
                 <div className="text-3xl font-bold">50%</div>
-                <div className="text-sm text-blue-100">Tiến độ đang học</div>
+                <div className="text-sm text-blue-100">Tần độ đăng nhập</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold">1/5</div>
-                <div className="text-sm text-blue-100">Chủ đề hoàn thành</div>
+                <div className="text-sm text-blue-100">Chu kỳ ôn tập</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold">4.8</div>
@@ -140,219 +87,287 @@ export default function Index() {
             </div>
           </div>
         </div>
+      </div>
 
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Left Sidebar - Subjects */}
+          {/* Sidebar */}
           <div className="lg:col-span-1 space-y-6">
-            {/* Today's Stats */}
-            <div className="grid grid-cols-3 gap-3 mb-6">
-              <div className="p-4 text-center rounded-lg border bg-white shadow-sm">
-                <BookOpen className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-900">3</div>
-                <div className="text-xs text-gray-600">Bài học hôm nay</div>
+            {/* Stats Cards */}
+            <div className="grid grid-cols-2 lg:grid-cols-1 gap-4">
+              <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <BookOpen className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <div className="text-gray-600 text-sm">Bài học hôm nay</div>
+                    <div className="text-2xl font-bold text-gray-900">3</div>
+                  </div>
                 </div>
-              
-              <div className="p-4 text-center rounded-lg border bg-white shadow-sm">
-                <Clock className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-gray-900">1,250</div>
-                  <div className="text-xs text-gray-600">Điểm thưởng</div>
+              </div>
+              <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                    <TrendingUp className="w-6 h-6 text-emerald-600" />
+                  </div>
+                  <div>
+                    <div className="text-gray-600 text-sm">Streak học tập</div>
+                    <div className="text-2xl font-bold text-gray-900">3 ngày</div>
+                  </div>
                 </div>
-              
-              <div className="p-4 text-center rounded-lg border bg-white shadow-sm">
-                  <Trophy className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-gray-900">2.5h</div>
-                  <div className="text-xs text-gray-600">Thời gian học</div>
+              </div>
+              <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <Target className="w-6 h-6 text-yellow-600" />
+                  </div>
+                  <div>
+                    <div className="text-gray-600 text-sm">Điểm thưởng</div>
+                    <div className="text-2xl font-bold text-gray-900">1,250</div>
+                  </div>
                 </div>
+              </div>
+              <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <Clock3 className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <div className="text-gray-600 text-sm">Thời gian học</div>
+                    <div className="text-2xl font-bold text-gray-900">2.5h</div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Subjects */}
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Môn học</h2>
-              <div className="space-y-3">
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Môn học</h3>
+              <div className="space-y-2">
                 {subjects.map((subject) => (
-                  <div key={subject.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer ">
-                    <div className="p-0">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-10 h-10 ${subject.color} rounded-lg flex items-center justify-center`}>
-                          <subject.icon className="w-5 h-5 text-white" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="font-medium text-gray-900">{subject.name}</div>
-                          <div className="text-sm text-gray-600">{subject.lessons}</div>
-                        </div>
-                      </div>
+                  <button
+                    key={subject.name}
+                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors text-left"
+                  >
+                    <div className={`w-10 h-10 ${subject.color} rounded-lg flex items-center justify-center`}>
+                      <subject.icon className="w-5 h-5 text-white" />
                     </div>
-                  </div>
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">{subject.name}</div>
+                      <div className="text-sm text-gray-500">{subject.lessons}</div>
+                    </div>
+                  </button>
                 ))}
               </div>
             </div>
 
-            {/* Grade Levels */}
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Khối lớp</h2>
-              <div className="flex flex-wrap gap-2">
-                {/* {["Lớp 6", "Lớp 7", "Lớp 8", "Lớp 9"].map((grade, index) => (
-                  <span className="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium
-                    key={grade} 
-                    variant={index === 2 ? "default" : "secondary"}
-                    className={`px-3 py-1 ${index === 2 ? "bg-blue-600 text-white" : ""}`}
+            {/* Grade Selector */}
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Khối lớp</h3>
+              <div className="grid grid-cols-4 gap-2">
+                {[6, 7, 8, 9].map((grade) => (
+                  <button
+                    key={grade}
+                    className={`py-2 px-3 rounded-lg font-medium transition-colors ${
+                      grade === 8
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
                   >
-                    {grade}
-                  </span>
-                ))} */}
+                    Lớp {grade}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Activity Tips */}
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Chủ đề học tập</h3>
+              <div className="space-y-3">
+                {activities.map((activity, idx) => (
+                  <div key={idx} className="p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <BookOpen className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">{activity.title}</div>
+                          <div className="text-xs text-gray-500">{activity.time} • kiểm tra</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full ${activity.progress === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`}
+                          style={{ width: `${activity.progress}%` }}
+                        />
+                      </div>
+                      <span className="text-xs font-medium text-gray-600">{activity.progress}%</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Main Content */}
+          {/* Main Content Area */}
           <div className="lg:col-span-3 space-y-6">
-            {/* Current Progress */}
-            <div className="p-6 bg-gradient-to-r from-blue-50 to-purple-50">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-1">So sánh kích thước và vị trí</h3>
-                    <p className="text-gray-600">Khám phá và nắm vững kiến thức cơ bản</p>
-                  </div>
-                  <div className="bg-purple-100 text-purple-700 px-3 py-1">
-                    Đang học
-                  </div>
+            {/* Current Course Card */}
+            <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold mb-2">So sánh kích thước và vị trí</h2>
+                  <p className="text-blue-100">Khám phá và nắm vững kiến thức cơ bản</p>
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  <div className="bg-white rounded-lg p-4">
-                    <div className="text-2xl font-bold text-blue-600 mb-1">2/4</div>
-                    <div className="text-sm text-gray-600">Hoàn thành</div>
+                <button className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg hover:bg-white/30 transition-colors">
+                  Đang học
+                </button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <BookOpen className="w-4 h-4" />
+                    <span className="text-sm">Bài học</span>
                   </div>
-                  <div className="bg-white rounded-lg p-4">
-                    <div className="text-2xl font-bold text-purple-600 mb-1">2-3h</div>
-                    <div className="text-sm text-gray-600">Thời gian</div>
-                  </div>
-                  <div className="bg-white rounded-lg p-4">
-                    <div className="text-2xl font-bold text-green-600 mb-1">85%</div>
-                    <div className="text-sm text-gray-600">Hoàn thành</div>
-                  </div>
+                  <div className="text-2xl font-bold">2/4</div>
+                  <div className="text-sm text-blue-100">Hoàn thành</div>
                 </div>
-
-                <div className="mb-4">
-                  <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-                    <span>Tiến độ tổng</span>
-                    <span>50%</span>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Clock className="w-4 h-4" />
+                    <span className="text-sm">Thời gian</span>
                   </div>
-                  <div className="h-2 w-full bg-gray-200 rounded-full">
-                    <div className="h-2 bg-blue-600 rounded-full" style={{width: "50%"}}></div>
+                  <div className="text-2xl font-bold">2-3h</div>
+                  <div className="text-sm text-blue-100">Ước tính</div>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <BarChart3 className="w-4 h-4" />
+                    <span className="text-sm">Điểm số</span>
+                  </div>
+                  <div className="text-2xl font-bold">85%</div>
+                  <div className="text-sm text-blue-100">Trung bình</div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span>Tiến độ tổng</span>
+                  <span className="font-medium">50%</span>
+                </div>
+                <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+                  <div className="h-full bg-white rounded-full" style={{ width: '50%' }} />
+                </div>
+              </div>
+            </div>
+
+            {/* Lessons Section */}
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-gray-900">▶ Bài học</h3>
+                <span className="text-sm text-gray-500">4 bài học</span>
+              </div>
+              <div className="space-y-3">
+                {lessons.map((lesson) => (
+                  <div key={lesson.id} className="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-blue-500 transition-colors">
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 font-bold">
+                      {lesson.id}
                     </div>
-                </div>
-            </div>
-
-            {/* Lessons */}
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900 flex items-center">
-                  <Play className="w-5 h-5 mr-2" />
-                  Bài học
-                </h2>
-                <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                  4 bài học
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                {lessons.map((lesson, index) => (
-                  <div key={lesson.id} className="p-4 hover:shadow-md transition-shadow">
-                      <div className="flex items-center space-x-4">
-                        <div className="flex-shrink-0">
-                          <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-lg font-semibold text-gray-600">
-                            {index + 1}
-                          </div>
-                        </div>
-                        
-                        <img className="w-10 h-10 rounded-full" src={lesson.image} alt="T" />
-
-                        <div className="flex-1">
-                          <h3 className="font-medium text-gray-900">{lesson.title}</h3>
-                          <p className="text-sm text-gray-600">{lesson.duration}</p>
-                        </div>
-
-                        <div className="flex items-center space-x-2">
-                          {lesson.status === "completed" && (
-                            <div className="bg-green-100 text-green-700">Hoàn thành</div>
-                          )}
-                          {lesson.status === "premium" && (
-                            <div className="bg-yellow-100 text-yellow-700">Premium</div>
-                          )}
-                          {lesson.status === "locked" && (
-                            <button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                              Bắt đầu
-                            </button>
-                          )}
-                          <ChevronRight className="w-5 h-5 text-gray-400" />
-                        </div>
-                      </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Practice Tests */}
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900 flex items-center">
-                  <Award className="w-5 h-5 mr-2" />
-                  Bài kiểm tra & Luyện tập
-                </h2>
-                <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                  4 bài kiểm tra
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {practiceTests.map((test) => (
-                  <div key={test.id} className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="font-semibold text-gray-900">{test.title}</h3>
-                        <div 
-                          variant={test.difficulty === "Dễ" ? "secondary" : "default"}
-                          className={test.difficulty === "Khó" ? "bg-red-100 text-red-700" : ""}
-                        >
-                          {test.difficulty}
-                        </div>
-                      </div>
-                      
-                      <p className="text-gray-600 mb-4">{test.questions}</p>
-                      
-                      <button 
-                        className={`w-full ${
-                          test.status === "premium" 
-                            ? "bg-yellow-600 hover:bg-yellow-700" 
-                            : "bg-green-600 hover:bg-green-700"
-                        }`}
-                      >
-                        {test.status === "premium" ? "Cần đăng cấp để làm bài" : "Bắt đầu kiểm tra"}
+                    <img src={lesson.image} alt="" className="w-12 h-12 rounded-lg object-cover" />
+                    <div className="flex-1">
+                      <h4 className="font-medium text-gray-900">{lesson.title}</h4>
+                      <p className="text-sm text-gray-500">{lesson.duration}</p>
+                    </div>
+                    {lesson.status === 'completed' && (
+                      <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-sm font-medium">
+                        Hoàn thành
+                      </span>
+                    )}
+                    {lesson.status === 'premium' && (
+                      <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-lg text-sm font-medium">
+                        Premium
+                      </span>
+                    )}
+                    {lesson.status === 'locked' && (
+                      <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                        Bắt đầu
                       </button>
+                    )}
                   </div>
                 ))}
+              </div>
+            </div>
 
-                {/* Daily Practice & Exercise Cards */}
-                <div className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-semibold text-gray-900">Đề thi thử</h3>
-                      <div className="bg-blue-100 text-blue-700">Miễn phí</div>
+            {/* Practice & Test Section */}
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-gray-900">📝 Bài kiểm tra & Luyện tập</h3>
+                <span className="text-sm text-gray-500">4 bài kiểm tra</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-start gap-3 mb-4">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-blue-600" />
                     </div>
-                    <p className="text-gray-600 mb-4">30 câu hỏi</p>
-                    <button className="w-full bg-gray-600 hover:bg-gray-700">
-                      Cần đăng cấp để làm bài
-                    </button>
+                    <div className="flex-1">
+                      <h4 className="font-medium text-gray-900 mb-1">Kiểm tra cơ bản</h4>
+                      <p className="text-sm text-gray-500">10 câu hỏi</p>
+                    </div>
+                    <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs font-medium">✓</span>
+                  </div>
+                  <button className="w-full px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium">
+                    Bắt đầu kiểm tra
+                  </button>
                 </div>
-
-                <div className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-semibold text-gray-900">Luyện tập hàng ngày</h3>
-                      <div className="bg-green-100 text-green-700">Mới</div>
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-start gap-3 mb-4">
+                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <Target className="w-5 h-5 text-purple-600" />
                     </div>
-                    <p className="text-gray-600 mb-4">5 phút</p>
-                    <button className="w-full bg-green-600 hover:bg-green-700">
-                      Bắt đầu kiểm tra
-                    </button>
+                    <div className="flex-1">
+                      <h4 className="font-medium text-gray-900 mb-1">Kiểm tra nâng cao</h4>
+                      <p className="text-sm text-gray-500">15 câu hỏi</p>
+                    </div>
+                  </div>
+                  <button className="w-full px-4 py-2 bg-gray-200 text-gray-400 rounded-lg cursor-not-allowed font-medium">
+                    Cần nâng cấp để thử cấp
+                  </button>
+                </div>
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-start gap-3 mb-4">
+                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                      <Clock className="w-5 h-5 text-yellow-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-medium text-gray-900 mb-1">Đề thi thử</h4>
+                      <p className="text-sm text-gray-500">20 câu hỏi</p>
+                      <p className="text-xs text-gray-400 mt-1">45 phút</p>
+                    </div>
+                    <span className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-medium">10h</span>
+                  </div>
+                  <button className="w-full px-4 py-2 bg-gray-200 text-gray-400 rounded-lg cursor-not-allowed font-medium">
+                    Cần nâng cấp để thử cấp
+                  </button>
+                </div>
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-start gap-3 mb-4">
+                    <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                      <BarChart3 className="w-5 h-5 text-emerald-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-medium text-gray-900 mb-1">Luyện tập hàng ngày</h4>
+                      <p className="text-sm text-gray-500">5 câu hỏi</p>
+                      <p className="text-xs text-emerald-600 mt-1">10 phút • Điều cạnh nhất: 92%</p>
+                    </div>
+                    <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs font-medium">Mới</span>
+                  </div>
+                  <button className="w-full px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium">
+                    Bắt đầu kiểm tra
+                  </button>
                 </div>
               </div>
             </div>

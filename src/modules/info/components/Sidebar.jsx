@@ -4,7 +4,7 @@ import { Lock, GraduationCap, Share2, QrCode, Gift, LogOut } from "lucide-react"
 //   activeItem?: string;
 // }
 
-export default function Sidebar({ activeItem = "profile" }) {
+export default function Sidebar() {
   const menuItems = [
     { id: "profile", label: "Thông tin cá nhân", icon: "user", active: true },
     { id: "password", label: "Đổi mật khẩu", icon: Lock },
@@ -34,7 +34,7 @@ export default function Sidebar({ activeItem = "profile" }) {
       <div className="border-t border-black pt-4 space-y-1">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = item.id === activeItem;
+          const isActive = item.id === "profile"; // Example active item
           
           return (
             <button
