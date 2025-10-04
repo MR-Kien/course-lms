@@ -10,5 +10,14 @@ export const ENDPOINTS = Object.freeze({
     DASHBOARD: "/dashboard",
     CHECKOUT: "/checkout",
     PRICING: "/pricing",
+    PROFILE: "/profile",
+    CHATBOT: "/chatbot",
+    COURSES: "/courses",
+    NEWS: "/news",
+    INFO: "/info",
   },
+  ADMIN: {
+    DASHBOARD: "/admin/dashboard"
+  },
+
 });

@@ -107,6 +107,49 @@ const pricingPage = {
   title: `Pricing | ${WEB_NAME}`,
   Layout: DashboardLayout,
 };
+const chatbotPage = {
+  path: ENDPOINTS.USER.CHATBOT,
+  component: lazy(() =>
+    delayRoute()(import("../modules/chatbot/features/index"))
+  ),
+  title: `Chatbot | ${WEB_NAME}`,
+  Layout: LandingLayout,
+};
+const newsPage = {
+  path: ENDPOINTS.USER.NEWS,
+  component: lazy(() =>
+    delayRoute()(import("../modules/news/features/index"))
+  ),
+  title: `News | ${WEB_NAME}`,
+  Layout: LandingLayout,
+};
+const infoPage = {
+  path: ENDPOINTS.USER.INFO,
+  component: lazy(() =>
+    delayRoute()(import("../modules/info/features/index"))
+  ),
+  title: `Info | ${WEB_NAME}`,
+  Layout: LandingLayout,
+};
+const coursePage = {
+  path: ENDPOINTS.USER.COURSES,
+  component: lazy(() =>
+    delayRoute()(import("../modules/courses/features/index"))
+  ),
+  title: `Courses | ${WEB_NAME}`,
+  Layout: LandingLayout,
+};
+const adminDashboardPage = {
+  path: ENDPOINTS.ADMIN.DASHBOARD,
+  component: lazy(() =>
+    delayRoute()(import("../modules/admin/features/index"))
+  ),
+  title: `Admin Dashboard | ${WEB_NAME}`,
+  Layout: LandingLayout,
+};
+
+
+
 // Các trang khác sẽ được thêm vào đây
 export const privateRouteData = [];
 export const publicRoutesData = [
@@ -118,6 +161,11 @@ export const publicRoutesData = [
   userdashboardPage,
   checkoutPage,
   pricingPage,
+  chatbotPage,
+  newsPage,
+  infoPage,
+  coursePage,
+  adminDashboardPage,
 ];
 
 // Improved route rendering function
