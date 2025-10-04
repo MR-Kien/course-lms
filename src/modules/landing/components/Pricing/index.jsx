@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Pricing() {
   const [billing, setBilling] = useState("monthly"); // monthly | yearly
   const [selectedPlan, setSelectedPlan] = useState("premium"); // free | premium | school
-
+  const navigate = useNavigate();
   const plans = {
     monthly: {
       free: {
@@ -174,14 +175,15 @@ export default function Pricing() {
               </ul>
 
               {/* Button */}
-              <button
+              <button onClick={() => navigate("/profile/edit")}
                 className={`w-full py-2 rounded-lg font-medium transition ${
                   key === "premium"
                     ? "bg-blue-600 text-white hover:bg-blue-700"
                     : key === "school"
                       ? "bg-purple-100 text-purple-600 hover:bg-purple-200"
                       : "bg-gray-800 text-white hover:bg-gray-900"
-                }`}
+                }`
+              }
               >
                 {plan.button}
               </button>

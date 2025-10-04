@@ -52,8 +52,8 @@ export default function Landing() {
               >
                 Giới thiệu
               </a>
-              <a
-                href="#"
+              <a 
+                href="/courses"
                 className="text-gray-700 hover:text-blue-600 font-medium"
               >
                 Khóa học
@@ -583,7 +583,7 @@ export default function Landing() {
           </div>
 
           <div className="flex justify-center gap-4">
-            <button className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 rounded-full font-medium">
+            <button onClick={() => navigate("/login")} className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 rounded-full font-medium">
               Bắt đầu Miễn phí Ngay
             </button>
             <button className="border border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3 rounded-full font-medium">
