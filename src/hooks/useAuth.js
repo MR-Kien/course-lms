@@ -8,15 +8,15 @@ import endpoints from "../constants/apiEndpoints";
 import { useNavigate } from "react-router-dom";
 import { ENDPOINTS } from "../routes/endPoints";
 import { toast } from "react-toastify";
-import { useNotificationSocket } from "./useNotificationSocket";
+// import { useNotificationSocket } from "./useNotificationSocket";
 export const useAuth = () => {
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const { user, token } = useSelector((state) => state.auth);
   const navigate = useNavigate();
-  const { disconnect } = useNotificationSocket((message) => {
-    console.log("Notification:", message);
-  });
+  // const { disconnect } = useNotificationSocket((message) => {
+  //   console.log("Notification:", message);
+  // });
 
   const loginMutation = useMutation({
     mutationFn: async (inp) => {
@@ -67,7 +67,7 @@ export const useAuth = () => {
     dispatch(logout());
     queryClient.clear();
     await request.post(endpoints.AUTH.LOGOUT, { token: token });
-    disconnect();
+    // disconnect();
     toast.success("Logout successfully", {
       position: "top-left",
       autoClose: 3000,
@@ -84,7 +84,7 @@ export const useAuth = () => {
     return response;
   };
   const verificationOtp = async (inp) => {
-    const response = await request.post(endpoints.AUTH.VERIFICATION_OTP, inp);
+const response = await request.post(endpoints.AUTH.VERIFICATION_OTP, inp);
     return response;
   };
   const resetPassword = async (inp) => {
