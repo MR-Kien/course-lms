@@ -1,6 +1,6 @@
-import Header from "@/components/Header";
-import Sidebar from "@/components/Sidebar";
-import Profile from "./Profile";
+import Header from "../components/Header";
+import Sidebar from "../components/Sidebar";
+import Profile from "../components/Profile";
 
 export default function Index() {
   return (
