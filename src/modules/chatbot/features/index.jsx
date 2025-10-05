@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { ENDPOINTS } from "../../../routes/endPoints";
+import { Link } from "react-router-dom";
 import {
   Menu,
   Settings,
@@ -12,7 +14,7 @@ import {
   ChevronDown,
   Send,
   Sparkles,
-  Link,
+  Link as LinkIcon,
   Image,
   ChevronLeft,
 } from "lucide-react";
@@ -28,10 +30,12 @@ function SidebarContent({collapsed}) {
   return (
     <div className="h-full flex flex-col">
       <div className="p-4 flex items-center gap-3 border-b border-slate-800">
-        <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-          <Sparkles className="w-6 h-6 text-white" />
+        <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
+          <Link to={ENDPOINTS.INDEX}>
+            <Sparkles className="w-6 h-6 text-white" />
+          </Link>
         </div>
-        {!collapsed && <span className="text-xl font-semibold">Learcnly</span>}
+        {!collapsed && <span className="text-xl font-semibold">Learnly</span>}
       </div>
 
       <div className="p-4">
@@ -73,7 +77,7 @@ function SidebarContent({collapsed}) {
           { icon: BookOpen, label: "Tìm kiếm" },
           { icon: Users, label: "Liên hệ" },
           { icon: BarChart3, label: "Trợ giúp" },
-          { icon: Settings, label: "Cài đ���t", muted: true },
+          { icon: Settings, label: "Cài đặt", muted: true },
         ].map((item, i) => (
           <button
             key={i}
@@ -96,7 +100,7 @@ export default function Index() {
   const [isCollapsed, setIsCollapsed] = useState(false); // desktop collapse
   const [isMobileOpen, setIsMobileOpen] = useState(false); // mobile slide-in
 
-  const subjects = [
+  const subject = [
     { name: "Toán học", icon: "📐", color: "bg-orange-100 text-orange-700" },
     { name: "Tiếng Anh", icon: "📖", color: "bg-purple-100 text-purple-700" },
     { name: "Vật lý", icon: "⚛️", color: "bg-blue-100 text-blue-700" },
@@ -334,7 +338,7 @@ export default function Index() {
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center gap-3 bg-gray-100 rounded-xl px-4 py-3">
               <button className="p-2 hover:bg-gray-200 rounded-lg transition-colors">
-                <Link className="w-5 h-5 text-gray-600" />
+                <LinkIcon className="w-5 h-5 text-gray-600" />
               </button>
               <button className="p-2 hover:bg-gray-200 rounded-lg transition-colors">
                 <Image className="w-5 h-5 text-gray-600" />

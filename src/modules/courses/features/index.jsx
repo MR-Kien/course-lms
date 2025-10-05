@@ -1,4 +1,6 @@
 import { Home, BookOpen, MessageSquare, Gift, Newspaper, ArrowLeft, Calculator, Languages, Atom, MapPin, FileText, Clock, Wrench, TrendingUp, Clock3, Target, BarChart3 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ENDPOINTS } from '../../../routes/endPoints';
 
 export default function Index() {
   const subjects = [
@@ -42,11 +44,13 @@ export default function Index() {
               </div>
               <nav className="hidden md:flex items-center gap-6">
                 <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
-                  <ArrowLeft className="w-4 h-4" />
-                  <span>Quay lại</span>
+                  <Link to={ENDPOINTS.INDEX} className="flex items-center gap-2">
+                    <ArrowLeft className="w-4 h-4" />
+                    <span>Quay lại</span>
+                  </Link>
                 </button>
                 <a href="#" className="text-gray-900 font-medium">Khóa học</a>
-                <a href="#" className="text-gray-600 hover:text-gray-900">Chat với AI</a>
+                <a href="../chatbot" className="text-gray-600 hover:text-gray-900">Chat với AI</a>
                 <a href="#" className="text-gray-600 hover:text-gray-900">Phần thưởng</a>
                 <a href="#" className="text-gray-600 hover:text-gray-900">Tin tức</a>
               </nav>
