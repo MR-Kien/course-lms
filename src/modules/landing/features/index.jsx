@@ -54,7 +54,7 @@ export default function Landing() {
               >
                 Chat với AI
               </a>
-              <a 
+              <a
                 href="#"
                 className="text-gray-700 hover:text-blue-600 font-medium"
               >
@@ -372,7 +372,7 @@ export default function Landing() {
               <CardContent className="pt-6">
                 <div className="flex items-start gap-4 mb-4">
                   <Avatar>
-                    <AvatarImage src="/placeholder.svg" />
+                    <AvatarImage src="https://images2.thanhnien.vn/528068263637045248/2023/2/21/blackpink-jisoo-2-1676965715595447024457.jpg" />
                     <AvatarFallback>NT</AvatarFallback>
                   </Avatar>
                   <div>
@@ -399,7 +399,7 @@ export default function Landing() {
               <CardContent className="pt-6">
                 <div className="flex items-start gap-4 mb-4">
                   <Avatar>
-                    <AvatarImage src="/placeholder.svg" />
+                    <AvatarImage src="https://www.nme.com/wp-content/uploads/2022/02/big-bang-top-696x442.jpeg" />
                     <AvatarFallback>LV</AvatarFallback>
                   </Avatar>
                   <div>
@@ -426,7 +426,7 @@ export default function Landing() {
               <CardContent className="pt-6">
                 <div className="flex items-start gap-4 mb-4">
                   <Avatar>
-                    <AvatarImage src="/placeholder.svg" />
+                    <AvatarImage src="https://kenh14cdn.com/2017/170208musikdaesung3-1486544100041.jpg" />
                     <AvatarFallback>TH</AvatarFallback>
                   </Avatar>
                   <div>
@@ -453,7 +453,7 @@ export default function Landing() {
               <CardContent className="pt-6">
                 <div className="flex items-start gap-4 mb-4">
                   <Avatar>
-                    <AvatarImage src="/placeholder.svg" />
+                    <AvatarImage src="https://townsquare.media/site/252/files/2018/07/big-bang-seungri-solo-album.jpg?w=1200&h=0&zc=1&s=0&a=t&q=89" />
                     <AvatarFallback>PM</AvatarFallback>
                   </Avatar>
                   <div>
@@ -500,61 +500,61 @@ export default function Landing() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="overflow-hidden">
               <Link to={ENDPOINTS.USER.NEWS}>
-              <div className="aspect-video bg-gradient-to-r from-blue-400 to-blue-600"></div>
-              <CardContent className="p-4">
-                <h4 className="font-semibold mb-2">
-                  AI sẽ thay đổi nền giáo dục trong thập kỷ tới
-                </h4>
-                <p className="text-sm text-gray-600 mb-3">
-                  Khám phá cách AI đang revolutionize việc học tập...
-                </p>
-                <div className="text-xs text-gray-500">15 Tháng 3, 2024</div>
-              </CardContent>
+                <div className="aspect-video bg-gradient-to-r from-blue-400 to-blue-600"></div>
+                <CardContent className="p-4">
+                  <h4 className="font-semibold mb-2">
+                    AI sẽ thay đổi nền giáo dục trong thập kỷ tới
+                  </h4>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Khám phá cách AI đang revolutionize việc học tập...
+                  </p>
+                  <div className="text-xs text-gray-500">15 Tháng 3, 2024</div>
+                </CardContent>
               </Link>
             </Card>
 
             <Card className="overflow-hidden">
               <Link to={ENDPOINTS.USER.NEWS}>
-              <div className="aspect-video bg-gradient-to-r from-green-400 to-green-600"></div>
-              <CardContent className="p-4">
-                <h4 className="font-semibold mb-2">
-                  Top 10 xu hướng học trực tuyến năm 2024
-                </h4>
-                <p className="text-sm text-gray-600 mb-3">
-                  Những xu hướng mới đang thay đổi cách chúng ta học...
-                </p>
-                <div className="text-xs text-gray-500">12 Tháng 3, 2024</div>
-              </CardContent>
+                <div className="aspect-video bg-gradient-to-r from-green-400 to-green-600"></div>
+                <CardContent className="p-4">
+                  <h4 className="font-semibold mb-2">
+                    Top 10 xu hướng học trực tuyến năm 2024
+                  </h4>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Những xu hướng mới đang thay đổi cách chúng ta học...
+                  </p>
+                  <div className="text-xs text-gray-500">12 Tháng 3, 2024</div>
+                </CardContent>
               </Link>
             </Card>
 
             <Card className="overflow-hidden">
               <Link to={ENDPOINTS.USER.NEWS}>
-              <div className="aspect-video bg-gradient-to-r from-purple-400 to-purple-600"></div>
-              <CardContent className="p-4">
-                <h4 className="font-semibold mb-2">
-                  Bí quyết học hiệu quả trong thời đại số
-                </h4>
-                <p className="text-sm text-gray-600 mb-3">
-                  Những phương pháp học tập được chứng minh hiệu quả...
-                </p>
-                <div className="text-xs text-gray-500">10 Tháng 3, 2024</div>
-              </CardContent>
+                <div className="aspect-video bg-gradient-to-r from-purple-400 to-purple-600"></div>
+                <CardContent className="p-4">
+                  <h4 className="font-semibold mb-2">
+                    Bí quyết học hiệu quả trong thời đại số
+                  </h4>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Những phương pháp học tập được chứng minh hiệu quả...
+                  </p>
+                  <div className="text-xs text-gray-500">10 Tháng 3, 2024</div>
+                </CardContent>
               </Link>
             </Card>
 
             <Card className="overflow-hidden">
               <Link to={ENDPOINTS.USER.NEWS}>
-              <div className="aspect-video bg-gradient-to-r from-orange-400 to-orange-600"></div>
-              <CardContent className="p-4">
-                <h4 className="font-semibold mb-2">
-                  Tương lai của giáo dục trực tuyến tại Việt Nam
-                </h4>
-                <p className="text-sm text-gray-600 mb-3">
-                  Phân tích thị trường và dự báo phát triển...
-                </p>
-                <div className="text-xs text-gray-500">8 Tháng 3, 2024</div>
-              </CardContent>
+                <div className="aspect-video bg-gradient-to-r from-orange-400 to-orange-600"></div>
+                <CardContent className="p-4">
+                  <h4 className="font-semibold mb-2">
+                    Tương lai của giáo dục trực tuyến tại Việt Nam
+                  </h4>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Phân tích thị trường và dự báo phát triển...
+                  </p>
+                  <div className="text-xs text-gray-500">8 Tháng 3, 2024</div>
+                </CardContent>
               </Link>
             </Card>
           </div>
@@ -593,7 +593,10 @@ export default function Landing() {
           </div>
 
           <div className="flex justify-center gap-4">
-            <button onClick={() => navigate("/login")} className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 rounded-full font-medium">
+            <button
+              onClick={() => navigate("/login")}
+              className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 rounded-full font-medium"
+            >
               Bắt đầu Miễn phí Ngay
             </button>
             <button className="border border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3 rounded-full font-medium">

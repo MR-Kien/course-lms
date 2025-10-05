@@ -132,14 +132,17 @@ const Login = () => {
       });
       return;
     }
-    if ((username.trim().toLowerCase() === "administator" ||
-        username.trim().toLowerCase() === "admin") && password === "123456") {
-        toast.success("Welcome, Admin!", {
-          position: "top-right",
-          autoClose: 2000,
-        });
-        navigate(ENDPOINTS.ADMIN.DASHBOARD);
-        return;
+    if (
+      (username.trim().toLowerCase() === "administator" ||
+        username.trim().toLowerCase() === "admin") &&
+      password === "123456"
+    ) {
+      toast.success("Welcome, Admin!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      navigate(ENDPOINTS.ADMIN.DASHBOARD);
+      return;
     }
     navigate(ENDPOINTS.USER.COURSES);
   };
@@ -287,7 +290,7 @@ const Login = () => {
           <button
             type="submit"
             className="w-full py-3 bg-[#1d4ed8] text-white font-bold rounded-[10px] shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
-          > 
+          >
             Đăng nhập{" "}
           </button>
 
@@ -344,7 +347,7 @@ const Login = () => {
           <img
             src={robot}
             alt="Learnly Illustration"
-            className="w-60 mt-[60px] md:w-80 drop-shadow-xl animate-bounce"
+            className="w-60 mt-[60px] md:w-80 drop-shadow-xl"
           />
         </div>
       </div>

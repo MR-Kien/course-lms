@@ -633,9 +633,7 @@ export default function Dashboard() {
 
                 {/* Action button */}
                 <button className="bg-[#301EA1] hover:bg-[#2515A0] text-white px-8 py-4 text-xl font-semibold rounded-2xl">
-                  <Link to={ENDPOINTS.USER.COURSES}>
-                  Đi đến khoá học
-                  </Link>
+                  <Link to={ENDPOINTS.USER.COURSES}>Đi đến khoá học</Link>
                 </button>
               </div>
 
@@ -778,7 +776,7 @@ export default function Dashboard() {
                     </div>
                     <div className="flex-1">
                       <h4 className="text-sm font-bold text-black mb-1">
-                        C���u trúc máy tính
+                        Cấu trúc máy tính
                       </h4>
                       <p className="text-xs text-gray-500 font-bold">
                         From : Hiếu Bùi

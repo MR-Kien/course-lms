@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ENDPOINTS } from "../../../routes/endPoints";
-import { Link } from "react-router-dom";
+import { Link , useNavigate } from "react-router-dom";
 import {
   Menu,
   Settings,
@@ -19,11 +19,20 @@ import {
   ChevronLeft,
 } from "lucide-react";
 
-function SidebarContent({collapsed}) {
+function SidebarContent({ collapsed }) {
   const conversations = [
-    { title: "Giải phương trình bậc hai", preview: "Để giải phương trình bậc hai..." },
-    { title: "Thì quá khứ đơn và thì hiện tại...", preview: "Cách sử dụng thì quá khứ..." },
-    { title: "Định luật Ôm là gì?", preview: "Định luật Ôm mô tả mối quan hệ..." },
+    {
+      title: "Giải phương trình bậc hai",
+      preview: "Để giải phương trình bậc hai...",
+    },
+    {
+      title: "Thì quá khứ đơn và thì hiện tại...",
+      preview: "Cách sử dụng thì quá khứ...",
+    },
+    {
+      title: "Định luật Ôm là gì?",
+      preview: "Định luật Ôm mô tả mối quan hệ...",
+    },
     { title: "v=2k", preview: "" },
   ];
 
@@ -47,7 +56,9 @@ function SidebarContent({collapsed}) {
 
       <div className="flex-1 overflow-y-auto px-4">
         {!collapsed && (
-          <h3 className="text-xs font-semibold text-slate-400 uppercase mb-3">Hôm Nay</h3>
+          <h3 className="text-xs font-semibold text-slate-400 uppercase mb-3">
+            Hôm Nay
+          </h3>
         )}
         <div className="space-y-2">
           {conversations.map((conv, idx) => (
@@ -58,9 +69,13 @@ function SidebarContent({collapsed}) {
             >
               {!collapsed ? (
                 <>
-                  <h4 className="text-sm font-medium line-clamp-1">{conv.title}</h4>
+                  <h4 className="text-sm font-medium line-clamp-1">
+                    {conv.title}
+                  </h4>
                   {conv.preview && (
-                    <p className="text-xs text-slate-400 line-clamp-1 mt-1">{conv.preview}</p>
+                    <p className="text-xs text-slate-400 line-clamp-1 mt-1">
+                      {conv.preview}
+                    </p>
                   )}
                 </>
               ) : (
@@ -99,8 +114,8 @@ export default function Index() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false); // desktop collapse
   const [isMobileOpen, setIsMobileOpen] = useState(false); // mobile slide-in
-
-  const subject = [
+  const navigate = useNavigate();
+  const subjects = [
     { name: "Toán học", icon: "📐", color: "bg-orange-100 text-orange-700" },
     { name: "Tiếng Anh", icon: "📖", color: "bg-purple-100 text-purple-700" },
     { name: "Vật lý", icon: "⚛️", color: "bg-blue-100 text-blue-700" },
@@ -149,13 +164,22 @@ export default function Index() {
           <div className="flex items-center gap-3">
             <button
               aria-label="Toggle menu"
-              onClick={() => (window.innerWidth < 1024 ? setIsMobileOpen(true) : setIsCollapsed((v) => !v))}
+              onClick={() =>
+                window.innerWidth < 1024
+                  ? setIsMobileOpen(true)
+                  : setIsCollapsed((v) => !v)
+              }
               className="p-2 hover:bg-gray-100 rounded-lg"
             >
               <Menu className="w-5 h-5" />
             </button>
             <div className="hidden md:flex items-center gap-2 text-sm text-gray-600">
-              <span>← Quay lại</span>
+              <Link
+                to={ENDPOINTS.USER.COURSES}
+                className="text-gray-600 hover:text-gray-900"
+              >
+                ← Quay lại
+              </Link>
             </div>
           </div>
 
@@ -166,9 +190,9 @@ export default function Index() {
               className="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Phạm Nguyễn Na Na</span>
+                <span className="text-sm font-medium">Bùi Minh Hiếu</span>
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                  PN
+                  BM
                 </div>
               </div>
               <ChevronDown className="w-4 h-4 text-gray-500" />
@@ -179,10 +203,10 @@ export default function Index() {
                 <div className="px-4 py-3 border-b border-gray-100">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                      PN
+                      BM
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold">Phạm Nguyễn Na Na</h4>
+                      <h4 className="text-sm font-semibold">Bùi Minh Hiếu</h4>
                       <p className="text-xs text-gray-500">Hạng cấp</p>
                     </div>
                   </div>
@@ -206,7 +230,10 @@ export default function Index() {
                   ))}
                 </div>
                 <div className="border-t border-gray-100 py-1">
-                  <button className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-3">
+                  <button
+                    onClick={() => navigate("/login")}
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-3"
+                  >
                     <LogOut className="w-4 h-4" />
                     Đăng xuất
                   </button>
@@ -270,7 +297,8 @@ export default function Index() {
               Xin chào! Tôi có thể giúp gì cho bạn?
             </h1>
             <p className="text-center text-gray-600 mb-8">
-              Hỏi tôi bất cứ điều gì về các môn học. Tôi có thể giải thích khái niệm, giải bài tập,
+              Hỏi tôi bất cứ điều gì về các môn học. Tôi có thể giải thích khái
+              niệm, giải bài tập,
               <br />
               tạo câu hỏi thực hành và nhiều hơn nữa
             </p>
@@ -311,14 +339,36 @@ export default function Index() {
             </div>
 
             <div className="mb-8">
-              <h3 className="text-sm font-semibold text-gray-700 mb-4">Môn học của bạn</h3>
+              <h3 className="text-sm font-semibold text-gray-700 mb-4">
+                Môn học của bạn
+              </h3>
               <div className="flex flex-wrap gap-3">
                 {[
-                  { name: "Toán học", icon: "📐", color: "bg-orange-100 text-orange-700" },
-                  { name: "Tiếng Anh", icon: "📖", color: "bg-purple-100 text-purple-700" },
-                  { name: "Vật lý", icon: "⚛️", color: "bg-blue-100 text-blue-700" },
-                  { name: "Hóa học", icon: "🧪", color: "bg-green-100 text-green-700" },
-                  { name: "Ngữ Văn", icon: "📚", color: "bg-yellow-100 text-yellow-700" },
+                  {
+                    name: "Toán học",
+                    icon: "📐",
+                    color: "bg-orange-100 text-orange-700",
+                  },
+                  {
+                    name: "Tiếng Anh",
+                    icon: "📖",
+                    color: "bg-purple-100 text-purple-700",
+                  },
+                  {
+                    name: "Vật lý",
+                    icon: "⚛️",
+                    color: "bg-blue-100 text-blue-700",
+                  },
+                  {
+                    name: "Hóa học",
+                    icon: "🧪",
+                    color: "bg-green-100 text-green-700",
+                  },
+                  {
+                    name: "Ngữ Văn",
+                    icon: "📚",
+                    color: "bg-yellow-100 text-yellow-700",
+                  },
                 ].map((subject, idx) => (
                   <button
                     key={idx}
