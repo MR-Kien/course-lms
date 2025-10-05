@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ENDPOINTS } from "../../../routes/endPoints";
+import { ENDPOINTS } from "../../../../routes/endPoints";
 import { 
   BookOpen, 
   Users, 
