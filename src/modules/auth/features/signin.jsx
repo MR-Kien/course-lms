@@ -341,7 +341,7 @@ const Signin = () => {
           <img
             src={robot}
             alt="Learnly Illustration"
-            className="w-[300px] mt-[60px] drop-shadow-xl animate-bounce"
+            className="w-[300px] mt-[60px] drop-shadow-xl"
           />
         </div>
       </div>
