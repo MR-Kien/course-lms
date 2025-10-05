@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+import { ENDPOINTS } from "../../../routes/endPoints";
 import { 
   BookOpen, 
   Users, 
@@ -56,8 +58,10 @@ export default function Sidebar() {
         {/* Logout */}
         <div className="p-4 border-t border-blue-500">
           <button className="w-full flex items-center space-x-3 px-4 py-3 text-blue-100 hover:bg-blue-700 hover:text-white rounded-lg transition-colors">
+            <Link to={ENDPOINTS.INDEX} >
             <LogOut className="w-5 h-5" />
             <span className="text-lg font-semibold">Đăng xuất</span>
+            </Link>
           </button>
         </div>
       </div>

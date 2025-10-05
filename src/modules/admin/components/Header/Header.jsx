@@ -1,4 +1,5 @@
 import { ArrowLeft, Bell, User, GraduationCap } from "lucide-react";
+import { Link } from "react-router-dom";
 // import { Button } from "@/components/ui/button";
 
 export default function Header() {
@@ -18,10 +19,12 @@ export default function Header() {
           {/* Back Button */}
           <div className="w-px h-8 bg-gray-300"></div>
           <div className="flex items-center space-x-3">
+            <Link to="/" className="flex items-center space-x-3">
             <button size="icon" className="text-gray-600">
               <ArrowLeft className="w-5 h-5" />
             </button>
             <span className="text-lg text-gray-600">Quay lại</span>
+            </Link>
           </div>
         </div>
         

@@ -175,7 +175,7 @@ export default function Pricing() {
               </ul>
 
               {/* Button */}
-              <button onClick={() => navigate("/profile/edit")}
+              <button onClick={() => navigate("/checkout")}
                 className={`w-full py-2 rounded-lg font-medium transition ${
                   key === "premium"
                     ? "bg-blue-600 text-white hover:bg-blue-700"

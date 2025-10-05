@@ -1,4 +1,6 @@
 import { Card, CardContent } from "../components/Card";
+import { Link } from "react-router-dom";
+import { ENDPOINTS } from "../../../routes/endPoints";
 // import { Badge } from "../components/Badge";
 import Pricing from "../components/Pricing";
 import WhychooseUs from "../components/WhyChooseUs";
@@ -41,7 +43,7 @@ export default function Landing() {
 
             <nav className="hidden md:flex space-x-8">
               <a
-                href="#"
+                href="/courses"
                 className="text-gray-700 hover:text-blue-600 font-medium"
               >
                 Khóa học
@@ -497,6 +499,7 @@ export default function Landing() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="overflow-hidden">
+              <Link to={ENDPOINTS.USER.NEWS}>
               <div className="aspect-video bg-gradient-to-r from-blue-400 to-blue-600"></div>
               <CardContent className="p-4">
                 <h4 className="font-semibold mb-2">
@@ -507,9 +510,11 @@ export default function Landing() {
                 </p>
                 <div className="text-xs text-gray-500">15 Tháng 3, 2024</div>
               </CardContent>
+              </Link>
             </Card>
 
             <Card className="overflow-hidden">
+              <Link to={ENDPOINTS.USER.NEWS}>
               <div className="aspect-video bg-gradient-to-r from-green-400 to-green-600"></div>
               <CardContent className="p-4">
                 <h4 className="font-semibold mb-2">
@@ -520,9 +525,11 @@ export default function Landing() {
                 </p>
                 <div className="text-xs text-gray-500">12 Tháng 3, 2024</div>
               </CardContent>
+              </Link>
             </Card>
 
             <Card className="overflow-hidden">
+              <Link to={ENDPOINTS.USER.NEWS}>
               <div className="aspect-video bg-gradient-to-r from-purple-400 to-purple-600"></div>
               <CardContent className="p-4">
                 <h4 className="font-semibold mb-2">
@@ -533,9 +540,11 @@ export default function Landing() {
                 </p>
                 <div className="text-xs text-gray-500">10 Tháng 3, 2024</div>
               </CardContent>
+              </Link>
             </Card>
 
             <Card className="overflow-hidden">
+              <Link to={ENDPOINTS.USER.NEWS}>
               <div className="aspect-video bg-gradient-to-r from-orange-400 to-orange-600"></div>
               <CardContent className="p-4">
                 <h4 className="font-semibold mb-2">
@@ -546,6 +555,7 @@ export default function Landing() {
                 </p>
                 <div className="text-xs text-gray-500">8 Tháng 3, 2024</div>
               </CardContent>
+              </Link>
             </Card>
           </div>
         </div>

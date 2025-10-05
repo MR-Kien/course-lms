@@ -2,10 +2,12 @@ import robot from "../../../assets/images/robot.png";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ENDPOINTS } from "../../../routes/endPoints";
+import { useNavigate } from "react-router-dom";
 import { GraduationCapIcon } from "lucide-react";
 import { toast } from "react-toastify";
 import "../styles/animated-border.css";
 const Signin = () => {
+  const navigate = useNavigate();
   const [fullname, setFullname] = useState("");
   const [province, setProvince] = useState("");
   const [district, setDistrict] = useState("");
@@ -86,6 +88,7 @@ const Signin = () => {
       position: "top-right",
       autoClose: 3000,
     });
+    navigate(ENDPOINTS.USER.COURSES);
   };
 
   return (

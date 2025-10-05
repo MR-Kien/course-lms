@@ -132,7 +132,16 @@ const Login = () => {
       });
       return;
     }
-    navigate(ENDPOINTS.USER.DASHBOARD);
+    if ((username.trim().toLowerCase() === "administator" ||
+        username.trim().toLowerCase() === "admin") && password === "123456") {
+        toast.success("Welcome, Admin!", {
+          position: "top-right",
+          autoClose: 2000,
+        });
+        navigate(ENDPOINTS.ADMIN.DASHBOARD);
+        return;
+    }
+    navigate(ENDPOINTS.USER.COURSES);
   };
 
   return (
@@ -278,7 +287,7 @@ const Login = () => {
           <button
             type="submit"
             className="w-full py-3 bg-[#1d4ed8] text-white font-bold rounded-[10px] shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
-          >
+          > 
             Đăng nhập{" "}
           </button>
 

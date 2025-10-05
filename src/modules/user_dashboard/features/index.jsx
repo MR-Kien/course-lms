@@ -494,6 +494,8 @@
 // }
 import { Card, CardContent } from "../components/Card";
 import { ChevronDown, Calendar } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ENDPOINTS } from "../../../routes/endPoints";
 
 export default function Dashboard() {
   return (
@@ -631,7 +633,9 @@ export default function Dashboard() {
 
                 {/* Action button */}
                 <button className="bg-[#301EA1] hover:bg-[#2515A0] text-white px-8 py-4 text-xl font-semibold rounded-2xl">
+                  <Link to={ENDPOINTS.USER.COURSES}>
                   Đi đến khoá học
+                  </Link>
                 </button>
               </div>
 
@@ -655,7 +659,9 @@ export default function Dashboard() {
                 <h3 className="text-2xl font-bold text-black">
                   Sự Kiện Sắp Tới
                 </h3>
-                <span className="text-sm text-gray-600">Xem tất cả</span>
+                <Link to="https://www.facebook.com/profile.php?id=61577615262108">
+                  <span className="text-sm text-gray-600">Xem tất cả</span>
+                </Link>
               </div>
 
               <div className="space-y-6">
