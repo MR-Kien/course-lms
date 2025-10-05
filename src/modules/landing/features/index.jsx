@@ -49,19 +49,19 @@ export default function Landing() {
                 Khóa học
               </a>
               <a
-                href="#"
+                href="/chatbot"
                 className="text-gray-700 hover:text-blue-600 font-medium"
               >
                 Chat với AI
               </a>
               <a 
-                href="/courses"
+                href="#"
                 className="text-gray-700 hover:text-blue-600 font-medium"
               >
                 Đổi thưởng
               </a>
               <a
-                href="/chatbot"
+                href="#"
                 className="text-gray-700 hover:text-blue-600 font-medium"
               >
                 Nâng cấp gói
