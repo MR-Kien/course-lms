@@ -13,10 +13,10 @@ import {
   LogOut,
   ChevronDown,
   Send,
-  Sparkles,
   Link as LinkIcon,
   Image,
   ChevronLeft,
+  GraduationCap
 } from "lucide-react";
 
 function SidebarContent({ collapsed }) {
@@ -33,7 +33,8 @@ function SidebarContent({ collapsed }) {
       title: "Định luật Ôm là gì?",
       preview: "Định luật Ôm mô tả mối quan hệ...",
     },
-    { title: "v=2k", preview: "" },
+    { title: "x^2=36", 
+      preview: "Để giải phương trình bậc hai đơn giản ..." },
   ];
 
   return (
@@ -41,14 +42,14 @@ function SidebarContent({ collapsed }) {
       <div className="p-4 flex items-center gap-3 border-b border-slate-800">
         <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
           <Link to={ENDPOINTS.INDEX}>
-            <Sparkles className="w-6 h-6 text-white" />
+            <GraduationCap strokeWidth={2.67} className="w-6 h-6 text-white" />
           </Link>
         </div>
         {!collapsed && <span className="text-xl font-semibold">Learnly</span>}
       </div>
 
       <div className="p-4">
-        <button className="w-full flex items-center gap-2 px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors">
+        <button className="w-full flex items-center gap-2 px-4 py-3 bg-slate-800 hover:bg-slate-700 rounded-[10px] transition-colors">
           <MessageSquare className="w-5 h-5" />
           {!collapsed && <span>Cuộc thảo chuyện mới</span>}
         </button>
@@ -64,7 +65,7 @@ function SidebarContent({ collapsed }) {
           {conversations.map((conv, idx) => (
             <div
               key={idx}
-              className="p-3 rounded-lg hover:bg-slate-800 cursor-pointer transition-colors"
+              className="p-3 rounded-[10px] hover:bg-slate-800 cursor-pointer transition-colors"
               title={conv.title}
             >
               {!collapsed ? (
@@ -96,7 +97,7 @@ function SidebarContent({ collapsed }) {
         ].map((item, i) => (
           <button
             key={i}
-            className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-colors hover:bg-slate-800 ${
+            className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-[10px] transition-colors hover:bg-slate-800 ${
               item.muted ? "text-white/50" : ""
             }`}
             title={item.label}
@@ -143,7 +144,7 @@ export default function Index() {
         <div className="absolute -right-10 top-4">
           <button
             onClick={() => setIsMobileOpen(false)}
-            className="p-2 rounded-lg bg-slate-900 text-white shadow"
+            className="p-2 rounded-[10px] bg-slate-900 text-white shadow"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -169,7 +170,7 @@ export default function Index() {
                   ? setIsMobileOpen(true)
                   : setIsCollapsed((v) => !v)
               }
-              className="p-2 hover:bg-gray-100 rounded-lg"
+              className="p-2 hover:bg-gray-100 rounded-[10px]"
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -187,7 +188,7 @@ export default function Index() {
           <div className="relative">
             <button
               onClick={() => setIsPopupOpen(!isPopupOpen)}
-              className="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-[10px] transition-colors"
             >
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium">Bùi Minh Hiếu</span>
@@ -308,7 +309,7 @@ export default function Index() {
                 <input
                   type="text"
                   placeholder="Giải trích khái niệm này cho tôi"
-                  className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <Send className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               </div>
@@ -316,7 +317,7 @@ export default function Index() {
                 <input
                   type="text"
                   placeholder="Tạo bài tập thực hành"
-                  className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <Send className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               </div>
@@ -324,7 +325,7 @@ export default function Index() {
                 <input
                   type="text"
                   placeholder="Kiểm tra bài làm của tôi"
-                  className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <Send className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               </div>
@@ -332,7 +333,7 @@ export default function Index() {
                 <input
                   type="text"
                   placeholder="Tạo đề bài học hay"
-                  className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <Send className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               </div>
@@ -372,7 +373,7 @@ export default function Index() {
                 ].map((subject, idx) => (
                   <button
                     key={idx}
-                    className={`px-4 py-2 rounded-lg font-medium text-sm ${subject.color} hover:opacity-80 transition-opacity`}
+                    className={`px-4 py-2 rounded-[10px] font-medium text-sm ${subject.color} hover:opacity-80 transition-opacity`}
                   >
                     <span className="mr-2">{subject.icon}</span>
                     {subject.name}
@@ -387,10 +388,10 @@ export default function Index() {
         <div className="bg-white border-t border-gray-200 p-4">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center gap-3 bg-gray-100 rounded-xl px-4 py-3">
-              <button className="p-2 hover:bg-gray-200 rounded-lg transition-colors">
+              <button className="p-2 hover:bg-gray-200 rounded-[10px] transition-colors">
                 <LinkIcon className="w-5 h-5 text-gray-600" />
               </button>
-              <button className="p-2 hover:bg-gray-200 rounded-lg transition-colors">
+              <button className="p-2 hover:bg-gray-200 rounded-[10px] transition-colors">
                 <Image className="w-5 h-5 text-gray-600" />
               </button>
               <input
@@ -398,7 +399,7 @@ export default function Index() {
                 placeholder="Nhập bất cứ điều gì hoặc kéo và thả tệp của bạn"
                 className="flex-1 bg-transparent border-none outline-none text-sm"
               />
-              <button className="p-2 hover:bg-gray-200 rounded-lg transition-colors">
+              <button className="p-2 hover:bg-gray-200 rounded-[10px] transition-colors">
                 <Send className="w-5 h-5 text-blue-600" />
               </button>
             </div>

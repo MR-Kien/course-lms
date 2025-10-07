@@ -135,7 +135,7 @@ export default function Index() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-8">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-[10px] flex items-center justify-center">
                   <BookOpen className="w-5 h-5 text-white" />
                 </div>
                 <span className="text-xl font-bold text-gray-900">Learnly</span>
@@ -169,7 +169,7 @@ export default function Index() {
               </nav>
             </div>
             <div className="flex items-center gap-4">
-              <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+              <button className="px-4 py-2 bg-purple-600 text-white rounded-[10px] hover:bg-purple-700 transition-colors">
                 Nâng cấp
               </button>
               <div className="relative flex items-center gap-3 bg-gray-200/95 rounded-full px-4 py-2 shadow-lg">
@@ -277,7 +277,7 @@ export default function Index() {
             <div className="grid grid-cols-2 lg:grid-cols-1 gap-4">
               <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-blue-100 rounded-[10px] flex items-center justify-center">
                     <BookOpen className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
@@ -288,7 +288,7 @@ export default function Index() {
               </div>
               <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-emerald-100 rounded-[10px] flex items-center justify-center">
                     <TrendingUp className="w-6 h-6 text-emerald-600" />
                   </div>
                   <div>
@@ -301,7 +301,7 @@ export default function Index() {
               </div>
               <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-yellow-100 rounded-[10px] flex items-center justify-center">
                     <Target className="w-6 h-6 text-yellow-600" />
                   </div>
                   <div>
@@ -314,7 +314,7 @@ export default function Index() {
               </div>
               <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <div className="w-12 h-12 bg-purple-100 rounded-[10px] flex items-center justify-center">
                     <Clock3 className="w-6 h-6 text-purple-600" />
                   </div>
                   <div>
@@ -332,10 +332,10 @@ export default function Index() {
                 {subjects.map((subject) => (
                   <button
                     key={subject.name}
-                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors text-left"
+                    className="w-full flex items-center gap-3 p-3 rounded-[10px] hover:bg-gray-50 transition-colors text-left"
                   >
                     <div
-                      className={`w-10 h-10 ${subject.color} rounded-lg flex items-center justify-center`}
+                      className={`w-10 h-10 ${subject.color} rounded-[10px] flex items-center justify-center`}
                     >
                       <subject.icon className="w-5 h-5 text-white" />
                     </div>
@@ -359,7 +359,7 @@ export default function Index() {
                 {[6, 7, 8, 9].map((grade) => (
                   <button
                     key={grade}
-                    className={`py-2 px-3 rounded-lg font-medium transition-colors ${
+                    className={`py-2 px-3 rounded-[10px] font-medium transition-colors ${
                       grade === 8
                         ? "bg-blue-600 text-white"
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -378,7 +378,7 @@ export default function Index() {
               </h3>
               <div className="space-y-3">
                 {activities.map((activity, idx) => (
-                  <div key={idx} className="p-3 bg-gray-50 rounded-lg">
+                  <div key={idx} className="p-3 bg-gray-50 rounded-[10px]">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -424,12 +424,12 @@ export default function Index() {
                     Khám phá và nắm vững kiến thức cơ bản
                   </p>
                 </div>
-                <button className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg hover:bg-white/30 transition-colors">
+                <button className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-[10px] hover:bg-white/30 transition-colors">
                   Đang học
                 </button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                <div className="bg-white/10 backdrop-blur-sm rounded-[10px] p-4">
                   <div className="flex items-center gap-2 mb-1">
                     <BookOpen className="w-4 h-4" />
                     <span className="text-sm">Bài học</span>
@@ -437,7 +437,7 @@ export default function Index() {
                   <div className="text-2xl font-bold">2/4</div>
                   <div className="text-sm text-blue-100">Hoàn thành</div>
                 </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                <div className="bg-white/10 backdrop-blur-sm rounded-[10px] p-4">
                   <div className="flex items-center gap-2 mb-1">
                     <Clock className="w-4 h-4" />
                     <span className="text-sm">Thời gian</span>
@@ -445,7 +445,7 @@ export default function Index() {
                   <div className="text-2xl font-bold">2-3h</div>
                   <div className="text-sm text-blue-100">Ước tính</div>
                 </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                <div className="bg-white/10 backdrop-blur-sm rounded-[10px] p-4">
                   <div className="flex items-center gap-2 mb-1">
                     <BarChart3 className="w-4 h-4" />
                     <span className="text-sm">Điểm số</span>
@@ -478,15 +478,15 @@ export default function Index() {
                 {lessons.map((lesson) => (
                   <div
                     key={lesson.id}
-                    className="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-blue-500 transition-colors"
+                    className="flex items-center gap-4 p-4 rounded-[10px] border border-gray-200 hover:border-blue-500 transition-colors"
                   >
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 font-bold">
+                    <div className="w-12 h-12 bg-blue-100 rounded-[10px] flex items-center justify-center text-blue-600 font-bold">
                       {lesson.id}
                     </div>
                     <img
                       src={lesson.image}
                       alt=""
-                      className="w-12 h-12 rounded-lg object-cover"
+                      className="w-12 h-12 rounded-[10px] object-cover"
                     />
                     <div className="flex-1">
                       <h4 className="font-medium text-gray-900">
@@ -495,17 +495,17 @@ export default function Index() {
                       <p className="text-sm text-gray-500">{lesson.duration}</p>
                     </div>
                     {lesson.status === "completed" && (
-                      <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-sm font-medium">
+                      <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-[10px] text-sm font-medium">
                         Hoàn thành
                       </span>
                     )}
                     {lesson.status === "premium" && (
-                      <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-lg text-sm font-medium">
+                      <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-[10px] text-sm font-medium">
                         Premium
                       </span>
                     )}
                     {lesson.status === "locked" && (
-                      <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                      <button className="px-4 py-2 bg-blue-600 text-white rounded-[10px] hover:bg-blue-700 transition-colors text-sm font-medium">
                         Bắt đầu
                       </button>
                     )}
@@ -523,9 +523,9 @@ export default function Index() {
                 <span className="text-sm text-gray-500">4 bài kiểm tra</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="border border-gray-200 rounded-lg p-4">
+                <div className="border border-gray-200 rounded-[10px] p-4">
                   <div className="flex items-start gap-3 mb-4">
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-blue-100 rounded-[10px] flex items-center justify-center">
                       <FileText className="w-5 h-5 text-blue-600" />
                     </div>
                     <div className="flex-1">
@@ -538,13 +538,13 @@ export default function Index() {
                       ✓
                     </span>
                   </div>
-                  <button className="w-full px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium">
+                  <button className="w-full px-4 py-2 bg-emerald-600 text-white rounded-[10px] hover:bg-emerald-700 transition-colors font-medium">
                     Bắt đầu kiểm tra
                   </button>
                 </div>
-                <div className="border border-gray-200 rounded-lg p-4">
+                <div className="border border-gray-200 rounded-[10px] p-4">
                   <div className="flex items-start gap-3 mb-4">
-                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-purple-100 rounded-[10px] flex items-center justify-center">
                       <Target className="w-5 h-5 text-purple-600" />
                     </div>
                     <div className="flex-1">
@@ -554,13 +554,13 @@ export default function Index() {
                       <p className="text-sm text-gray-500">15 câu hỏi</p>
                     </div>
                   </div>
-                  <button className="w-full px-4 py-2 bg-gray-200 text-gray-400 rounded-lg cursor-not-allowed font-medium">
+                  <button className="w-full px-4 py-2 bg-gray-200 text-gray-400 rounded-[10px] cursor-not-allowed font-medium">
                     Cần nâng cấp để thử cấp
                   </button>
                 </div>
-                <div className="border border-gray-200 rounded-lg p-4">
+                <div className="border border-gray-200 rounded-[10px] p-4">
                   <div className="flex items-start gap-3 mb-4">
-                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-yellow-100 rounded-[10px] flex items-center justify-center">
                       <Clock className="w-5 h-5 text-yellow-600" />
                     </div>
                     <div className="flex-1">
@@ -574,13 +574,13 @@ export default function Index() {
                       10h
                     </span>
                   </div>
-                  <button className="w-full px-4 py-2 bg-gray-200 text-gray-400 rounded-lg cursor-not-allowed font-medium">
+                  <button className="w-full px-4 py-2 bg-gray-200 text-gray-400 rounded-[10px] cursor-not-allowed font-medium">
                     Cần nâng cấp để thử cấp
                   </button>
                 </div>
-                <div className="border border-gray-200 rounded-lg p-4">
+                <div className="border border-gray-200 rounded-[10px] p-4">
                   <div className="flex items-start gap-3 mb-4">
-                    <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-emerald-100 rounded-[10px] flex items-center justify-center">
                       <BarChart3 className="w-5 h-5 text-emerald-600" />
                     </div>
                     <div className="flex-1">
@@ -596,7 +596,7 @@ export default function Index() {
                       Mới
                     </span>
                   </div>
-                  <button className="w-full px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium">
+                  <button className="w-full px-4 py-2 bg-emerald-600 text-white rounded-[10px] hover:bg-emerald-700 transition-colors font-medium">
                     Bắt đầu kiểm tra
                   </button>
                 </div>
