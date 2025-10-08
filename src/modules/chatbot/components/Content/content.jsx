@@ -1,81 +1,270 @@
-import { Link2, Image, Send } from "lucide-react";
+// /components/Content/content.jsx
+import { BookOpen } from "lucide-react";
 
-export default function Content() {
+export default function Content({ conversation }) {
+  if (!conversation) {
+    return (
+      <div className="min-h-screen bg-background py-8 px-4">
+        <div className="max-w-[1236px] mx-auto">
+          <div className="border border-black/30 rounded-xl p-6 md:p-10 bg-white text-center">
+            <BookOpen className="w-10 h-10 mx-auto text-gray-400 mb-3" />
+            <h2 className="text-xl font-medium">Không có nội dung</h2>
+            <p className="text-sm text-gray-600 mt-2">
+              Vui lòng chọn một cuộc trò chuyện từ thanh bên để xem nội dung chi tiết.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Tách dữ liệu cơ bản
+  const { title, type, preview, payload } = conversation;
+
+  // ==== CASE 1: Toán học ====
+  if (type === "math") {
+    const question = payload?.question || title;
+    const solution = payload?.solution || "x = ±6";
+    return (
+      <div className="min-h-screen bg-background py-8 px-4">
+        <div className="max-w-[1236px] mx-auto">
+          <div className="border border-black/30 rounded-xl p-6 md:p-10 bg-white space-y-6">
+            <h2 className="text-2xl font-semibold mb-2">Giải phương trình bậc hai</h2>
+
+            <section>
+              <h3 className="text-xl font-medium mb-2">Đề bài</h3>
+              <p>{question}</p>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-medium mb-2">Cách giải</h3>
+              <p>
+                Đây là phương trình bậc hai cơ bản. Ta có thể lấy căn bậc hai hai vế:
+              </p>
+              <p className="mt-2 font-medium">⇒ {solution}</p>
+              <p className="mt-2">
+                Kiểm tra lại: thế x = 6 hoặc x = -6 vào phương trình, cả hai đều thỏa mãn.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-medium mb-2">Ghi nhớ</h3>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Phương trình dạng x² = a có nghiệm x = ±√a</li>
+                <li>Nếu a &lt; 0, phương trình vô nghiệm trong R</li>
+                <li>Kiểm tra nghiệm bằng cách thay lại vào biểu thức gốc</li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ==== CASE 2: Tiếng Anh ====
+  if (type === "english") {
+    return (
+      <div className="min-h-screen bg-background py-8 px-4">
+        <div className="max-w-[1236px] mx-auto">
+          <div className="border border-black/30 rounded-xl p-6 md:p-10 bg-white space-y-6">
+            <h2 className="text-2xl font-semibold mb-4">
+              Thì quá khứ đơn và thì hiện tại đơn
+            </h2>
+
+            <section>
+              <h3 className="text-xl font-medium mb-2">1️⃣ Thì hiện tại đơn (Simple Present)</h3>
+              <p>
+                Dùng để diễn tả thói quen, sự thật hiển nhiên, hoặc hành động lặp đi lặp lại.
+              </p>
+              <p className="mt-2 font-medium">🧩 Cấu trúc:</p>
+              <pre className="bg-gray-100 rounded-lg p-3 mt-1">
+                <code>
+                  (+) S + V(s/es) + O{"\n"}
+                  (-) S + do/does not + V + O{"\n"}
+                  (?) Do/Does + S + V + O?
+                </code>
+              </pre>
+              <p className="mt-2">
+                🔹 <b>Ví dụ:</b> She <b>goes</b> to school every day.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-medium mb-2">2️⃣ Thì quá khứ đơn (Simple Past)</h3>
+              <p>
+                Dùng để diễn tả hành động đã xảy ra và kết thúc trong quá khứ.
+              </p>
+              <p className="mt-2 font-medium">🧩 Cấu trúc:</p>
+              <pre className="bg-gray-100 rounded-lg p-3 mt-1">
+                <code>
+                  (+) S + V(ed) + O{"\n"}
+                  (-) S + did not + V + O{"\n"}
+                  (?) Did + S + V + O?
+                </code>
+              </pre>
+              <p className="mt-2">
+                🔹 <b>Ví dụ:</b> She <b>went</b> to school yesterday.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-medium mb-2">3️⃣ Phân biệt nhanh</h3>
+              <table className="w-full border border-gray-300 text-sm">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="border p-2">Tiêu chí</th>
+                    <th className="border p-2">Hiện tại đơn</th>
+                    <th className="border p-2">Quá khứ đơn</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border p-2">Thời điểm</td>
+                    <td className="border p-2">Hiện tại / thường xuyên</td>
+                    <td className="border p-2">Trong quá khứ</td>
+                  </tr>
+                  <tr>
+                    <td className="border p-2">Trạng từ thường dùng</td>
+                    <td className="border p-2">always, usually, often</td>
+                    <td className="border p-2">yesterday, last week</td>
+                  </tr>
+                  <tr>
+                    <td className="border p-2">Động từ</td>
+                    <td className="border p-2">V (s/es)</td>
+                    <td className="border p-2">V-ed / quá khứ bất quy tắc</td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ==== CASE 3: Vật lý ====
+  if (type === "physics") {
+    return (
+      <div className="min-h-screen bg-background py-8 px-4">
+        <div className="max-w-[1236px] mx-auto">
+          <div className="border border-black/30 rounded-xl p-6 md:p-10 bg-white space-y-6">
+            <h2 className="text-2xl font-semibold mb-4">Định luật Ôm</h2>
+
+            <section>
+              <h3 className="text-xl font-medium mb-2">1️⃣ Phát biểu</h3>
+              <p>
+                Cường độ dòng điện chạy qua một dây dẫn tỉ lệ thuận với hiệu điện thế giữa hai đầu dây và tỉ lệ nghịch với điện trở của dây đó.
+              </p>
+              <p className="mt-2 font-medium">🔹 Công thức: U = I × R</p>
+              <p className="text-sm text-gray-600 mt-1">
+                Trong đó: U — hiệu điện thế (V), I — cường độ dòng điện (A), R — điện trở (Ω)
+              </p>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-medium mb-2">2️⃣ Ví dụ tính toán</h3>
+              <p>
+                Giả sử có một điện trở R = 5Ω, hiệu điện thế U = 10V.  
+                Tính cường độ dòng điện I?
+              </p>
+              <p className="mt-2 font-medium">Áp dụng công thức:</p>
+              <pre className="bg-gray-100 rounded-lg p-3 mt-1">
+                <code>I = U / R = 10 / 5 = 2 (A)</code>
+              </pre>
+              <p>Kết luận: Cường độ dòng điện chạy qua mạch là 2 ampe.</p>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-medium mb-2">3️⃣ Ứng dụng thực tế</h3>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Tính toán công suất điện tiêu thụ (P = U × I)</li>
+                <li>Thiết kế mạch điện trong dân dụng</li>
+                <li>Xác định giá trị điện trở phù hợp cho thiết bị</li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </div>
+    );
+  }
+// ==== CASE 4: Hóa học ====
+  if (type === "chemistry") {
+    return (
+      <div className="min-h-screen bg-background py-8 px-4">
+        <div className="max-w-[1236px] mx-auto">
+          <div className="border border-black/30 rounded-xl p-6 md:p-10 bg-white space-y-6">
+            <h2 className="text-2xl font-semibold mb-4">
+              Phản ứng oxi hóa - khử
+            </h2>
+
+            <section>
+              <h3 className="text-xl font-medium mb-2">1️⃣ Khái niệm</h3>
+              <p>
+                Phản ứng oxi hóa - khử là quá trình trong đó xảy ra **sự chuyển electron**
+                giữa các chất. Một chất **nhường electron** (bị oxi hóa), chất khác **nhận electron**
+                (bị khử).
+              </p>
+              <p className="mt-2 font-medium">🔹 Tổng quát:</p>
+              <pre className="bg-gray-100 rounded-lg p-3 mt-1">
+                <code>
+                  Chất khử → Chất oxi hóa + e⁻{"\n"}
+                  Chất oxi hóa + e⁻ → Chất khử
+                </code>
+              </pre>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-medium mb-2">2️⃣ Ví dụ minh họa</h3>
+              <p>
+                Phản ứng giữa kẽm và dung dịch axit clohiđric:
+              </p>
+              <pre className="bg-gray-100 rounded-lg p-3 mt-2">
+                <code>
+                  Zn + 2HCl → ZnCl₂ + H₂↑
+                </code>
+              </pre>
+              <p className="mt-2">
+                Trong phản ứng này:
+              </p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>
+                  Zn <b>bị oxi hóa</b> (nhường 2e⁻): Zn → Zn²⁺ + 2e⁻
+                </li>
+                <li>
+                  H⁺ <b>bị khử</b> (nhận 2e⁻): 2H⁺ + 2e⁻ → H₂
+                </li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-medium mb-2">3️⃣ Cách nhận biết phản ứng oxi hóa - khử</h3>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Có sự thay đổi số oxi hóa của nguyên tố.</li>
+                <li>Xuất hiện quá trình nhường – nhận electron.</li>
+                <li>Thường sinh ra chất mới, khí hoặc kết tủa.</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="text-xl font-medium mb-2">4️⃣ Ứng dụng thực tế</h3>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Phản ứng trong pin điện hóa và ắc quy.</li>
+                <li>Quá trình gỉ sét của sắt là phản ứng oxi hóa - khử tự nhiên.</li>
+                <li>Điện phân, tinh chế kim loại, mạ điện.</li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <div className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-[1236px] mx-auto">
         <div className="border border-black/30 rounded-xl p-6 md:p-10 bg-white">
-          {/* Question Section */}
-          <div className="mb-6">
-            <h2 className="text-[25px] font-normal mb-2" style={{ fontFamily: 'Roboto, sans-serif' }}>Câu hỏi</h2>
-            <p className="text-[15px] text-black">x^2=36</p>
-          </div>
-
-          {/* Solution Section */}
-          <div className="mb-6">
-            <h2 className="text-[25px] font-normal mb-4" style={{ fontFamily: 'Roboto, sans-serif' }}>Giải Pháp</h2>
-            <div className="border border-black/20 rounded-xl p-4 md:p-6">
-              <p className="font-medium mb-3">Giải phương trình</p>
-              <div className="text-base leading-relaxed space-y-2">
-                <p>
-                  Để giải phương trình bậc hai đơn giản này, chúng ta cần tìm giá trị của *x* sao cho *x* bình phương bằng 36.
-                </p>
-                <p>Phương trình đã cho là:</p>
-                <p className="font-medium">x² = 36</p>
-                <p>Để tìm *x*, ta lấy căn bậc hai của cả hai vế:</p>
-                <div className="flex items-center gap-2 my-2">
-                  <svg width="31" height="15" viewBox="0 0 31 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M7.75 15C7.51182 15 7.27998 14.935 7.08891 14.8146C6.89783 14.6941 6.75772 14.5248 6.68936 14.3316L3.60486 5.625H1.10714C0.81351 5.625 0.531904 5.52623 0.324275 5.35041C0.116645 5.1746 0 4.93614 0 4.6875C0 4.43886 0.116645 4.2004 0.324275 4.02459C0.531904 3.84877 0.81351 3.75 1.10714 3.75H4.42857C4.66676 3.74999 4.89859 3.81502 5.08967 3.93543C5.28074 4.05585 5.42086 4.22523 5.48921 4.41844L7.57175 10.2947L9.98864 0.741563C10.0416 0.531679 10.178 0.34354 10.3751 0.208573C10.5722 0.0736057 10.818 -1.81021e-05 11.0714 3.33853e-09H29.8929C30.1865 3.33853e-09 30.4681 0.0987722 30.6757 0.274588C30.8834 0.450403 31 0.68886 31 0.9375C31 1.18614 30.8834 1.4246 30.6757 1.60041C30.4681 1.77623 30.1865 1.875 29.8929 1.875H11.9671L8.83278 14.2584C8.78157 14.4622 8.65169 14.6457 8.46364 14.7799C8.27559 14.9142 8.04008 14.9916 7.79429 15H7.75Z" fill="currentColor"/>
-                  </svg>
-                  <span>x² = </span>
-                  <svg width="31" height="15" viewBox="0 0 31 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M7.75 15C7.51182 15 7.27998 14.935 7.08891 14.8146C6.89783 14.6942 6.75772 14.5248 6.68936 14.3316L3.60486 5.625H1.10714C0.81351 5.625 0.531904 5.52623 0.324275 5.35041C0.116645 5.1746 0 4.93614 0 4.6875C0 4.43886 0.116645 4.2004 0.324275 4.02459C0.531904 3.84877 0.81351 3.75 1.10714 3.75H4.42857C4.66676 3.74999 4.89859 3.81502 5.08967 3.93543C5.28074 4.05585 5.42086 4.22523 5.48921 4.41844L7.57175 10.2947L9.98864 0.741563C10.0416 0.531679 10.178 0.34354 10.3751 0.208573C10.5722 0.0736057 10.818 -1.81021e-05 11.0714 3.33853e-09H29.8929C30.1865 3.33853e-09 30.4681 0.0987722 30.6757 0.274588C30.8834 0.450403 31 0.68886 31 0.9375C31 1.18614 30.8834 1.4246 30.6757 1.60041C30.4681 1.77623 30.1865 1.875 29.8929 1.875H11.9671L8.83279 14.2584C8.78157 14.4622 8.65169 14.6457 8.46364 14.7799C8.27559 14.9142 8.04008 14.9916 7.79429 15H7.75Z" fill="currentColor"/>
-                  </svg>
-                  <span>36</span>
-                </div>
-                <p>Vì Vậy,</p>
-                <p className="font-medium">x = ±6</p>
-                <p>Do đó, *x* có hai giá trị: 6 và -6.</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Key Concepts Section */}
-          <div className="mb-6">
-            <div className="border border-black/20 rounded-xl p-4 md:p-6">
-              <h3 className="text-xl font-normal mb-4" style={{ fontFamily: 'Roboto, sans-serif' }}>Khái niệm chính</h3>
-              <ol className="space-y-3 text-base">
-                <li>1. Hiểu khái niệm</li>
-                <li>2. Hiểu quá trình giải</li>
-                <li>3. Các dạng bài tập tương tự</li>
-              </ol>
-            </div>
-          </div>
-
-          {/* Input Section */}
-          <div className="mb-4">
-            <div className="border border-black/50 rounded-xl p-6 bg-white flex items-center gap-4">
-              <button className="text-black/50 hover:text-black transition-colors">
-                <Link2 className="w-[30px] h-[30px]" />
-              </button>
-              <button className="text-black/50 hover:text-black transition-colors">
-                <Image className="w-[30px] h-[30px]" />
-              </button>
-              <input
-                type="text"
-                placeholder="Nhập câu hỏi bổ sung"
-                className="flex-1 text-xl outline-none placeholder:text-black/50 bg-transparent"
-              />
-              <button className="text-black/30 hover:text-black transition-colors">
-                <Send className="w-[30px] h-[30px]" />
-              </button>
-            </div>
-          </div>
-
-          {/* Footer Text */}
-          <p className="text-sm text-black/50 text-center md:text-left">
-            LearnlyAI có thể mắc lỗi. Hãy kiểm tra thông tin quan trọng
-          </p>
+          <h2 className="text-2xl font-semibold mb-4">{title}</h2>
+          <p>{preview || "Nội dung chi tiết sẽ sớm được cập nhật."}</p>
         </div>
       </div>
     </div>
