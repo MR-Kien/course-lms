@@ -15,6 +15,10 @@ import {
   Link as LinkIcon,
   Image,
   ChevronLeft,
+  Sparkles,
+  ArrowLeft,
+  Crown,
+  Bell,
 } from "lucide-react";
 
 import SidebarContent from "../components/Sidebar/index";
@@ -132,76 +136,101 @@ export default function Index() {
             >
               <Menu className="w-5 h-5" />
             </button>
-            <div className="hidden md:flex items-center gap-2 text-sm text-gray-600">
-              <Link
-                to={ENDPOINTS.USER.COURSES}
-                className="text-gray-600 hover:text-gray-900"
-              >
-                ← Quay lại
-              </Link>
+
+            <div className="hidden md:flex items-center gap-2">
+              <button className="flex items-center gap-2 px-4 py-2 text-black hover:bg-gray-100 rounded-lg transition-colors">
+                <Link
+                    to={ENDPOINTS.USER.COURSES}
+                    className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                    <span className="text-lg">Quay lại</span>
+                  </Link>
+              </button>
+
+              <div className="w-px h-9 bg-black/30 mx-2"></div>
+
+              <button className="px-4 py-2 text-lg text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-semibold">
+                Learnly AI
+              </button>
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-gray-400" />
+                <span className="text-sm text-gray-400 font-light">NovaStep Model 4o Advanced</span>
+              </div>
             </div>
           </div>
 
-          {/* User Profile with Popup */}
-          <div className="relative">
-            <button
-              onClick={() => setIsPopupOpen(!isPopupOpen)}
-              className="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-[10px] transition-colors"
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Bùi Minh Hiếu</span>
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                  BM
-                </div>
-              </div>
-              <ChevronDown className="w-4 h-4 text-gray-500" />
-            </button>
-
-            {isPopupOpen && (
-              <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50">
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+          <div className="flex items-center gap-3">
+              <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-black hover:bg-gray-100 rounded-xl transition-colors">
+                <Crown className="w-5 h-5" />
+                <div className="text-lg font-semibold">Nâng cấp</div>
+              </button>
+              <Bell className="w-6 h-6" />
+              <Settings className="w-6 h-6" />
+              
+              {/* User Profile with Popup */}
+              <div className="relative">
+                <button
+                  onClick={() => setIsPopupOpen(!isPopupOpen)}
+                  className="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-[10px] transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium">Bùi Minh Hiếu</span>
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
                       BM
                     </div>
-                    <div>
-                      <h4 className="text-sm font-semibold">Bùi Minh Hiếu</h4>
-                      <p className="text-xs text-gray-500">Hạng cấp</p>
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-gray-500" />
+                </button>
+
+                {isPopupOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50">
+                    <div className="px-4 py-3 border-b border-gray-100">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                          BM
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-semibold">Bùi Minh Hiếu</h4>
+                          <p className="text-xs text-gray-500">Hạng cấp</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="py-1">
+                      {[
+                        { icon: User, label: "Trang cá nhân" },
+                        { icon: Users, label: "Liên hệ của tôi" },
+                        { icon: BookOpen, label: "Hỗ trợ dữ liệu" },
+                        { icon: HelpCircle, label: "Trợ giúp & hỗ trợ" },
+                        { icon: Settings, label: "Cài đặt" },
+                        { icon: BarChart3, label: "Hoạt động" },
+                      ].map((it, i) => (
+                        <button
+                          key={i}
+                          className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-3"
+                        >
+                          <it.icon className="w-4 h-4" />
+                          {it.label}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="border-t border-gray-100 py-1">
+                      <button
+                        onClick={() => navigate("/login")}
+                        className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-3"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Đăng xuất
+                      </button>
                     </div>
                   </div>
-                </div>
-                <div className="py-1">
-                  {[
-                    { icon: User, label: "Trang cá nhân" },
-                    { icon: Users, label: "Liên hệ của tôi" },
-                    { icon: BookOpen, label: "Hỗ trợ dữ liệu" },
-                    { icon: HelpCircle, label: "Trợ giúp & hỗ trợ" },
-                    { icon: Settings, label: "Cài đặt" },
-                    { icon: BarChart3, label: "Hoạt động" },
-                  ].map((it, i) => (
-                    <button
-                      key={i}
-                      className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-3"
-                    >
-                      <it.icon className="w-4 h-4" />
-                      {it.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="border-t border-gray-100 py-1">
-                  <button
-                    onClick={() => navigate("/login")}
-                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-3"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Đăng xuất
-                  </button>
-                </div>
+                )}
               </div>
-            )}
-          </div>
-        </div>
+            </div>
 
+          </div>
+
+          
         {/* Main Chat Content */}
         <div className="flex-1 overflow-y-auto bg-gray-50">
           {selectedConversation ? (

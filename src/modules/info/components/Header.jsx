@@ -1,5 +1,6 @@
 import { Bell, Crown, MessageSquare, Gift, FileText } from "lucide-react";
-
+import { Link } from "react-router-dom";
+import { ENDPOINTS } from "../../../routes/endPoints";
 export default function Header() {
   return (
     <header className="w-full min-h-[88px] border-b border-black/50 bg-white px-4 md:px-8 flex items-center justify-between py-4">
@@ -14,31 +15,33 @@ export default function Header() {
         </div>
 
         <div className="hidden md:flex items-center gap-2">
-          <button className="flex items-center gap-2 px-4 py-2 text-black hover:bg-gray-100 rounded-lg transition-colors">
-            <svg className="w-5 h-5" viewBox="0 0 19 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M15.043 10L3.95964 10" stroke="#374151" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M9.5 15.833L3.95833 9.99967L9.5 4.16634" stroke="#374151" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <span className="text-lg">Quay lại</span>
-          </button>
 
           <div className="w-px h-9 bg-black/30 mx-2"></div>
+          <button className="flex items-center gap-2 px-4 py-2 text-black hover:bg-gray-100 rounded-lg transition-colors">
+            <Link to={ENDPOINTS.USER.COURSES} className="flex items-center gap-2">
+              <svg className="w-5 h-5" viewBox="0 0 19 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15.043 10L3.95964 10" stroke="#374151" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M9.5 15.833L3.95833 9.99967L9.5 4.16634" stroke="#374151" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span className="text-lg">Quay lại</span>
+            </Link>
+          </button>
 
-          <button className="px-4 py-2 text-lg text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+          <button className="px-4 py-2 text-lg font-semibold text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
             Vào học
           </button>
         </div>
 
-        <div className="hidden lg:flex items-center gap-6 ml-8">
-          <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
+        <div className="hidden lg:flex items-center gap-10 ml-4">
+          <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors font-semibold">
             <MessageSquare className="w-5 h-5" />
             <span className="text-lg">Chat với AI</span>
           </button>
-          <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
+          <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors font-semibold">
             <Gift className="w-5 h-5" />
             <span className="text-lg">Phần thưởng</span>
           </button>
-          <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
+          <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors font-semibold">
             <FileText className="w-5 h-5" />
             <span className="text-lg">Tin tức</span>
           </button>
