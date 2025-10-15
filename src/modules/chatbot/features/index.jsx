@@ -140,7 +140,7 @@ export default function Index() {
             <div className="hidden md:flex items-center gap-2">
               <button className="flex items-center gap-2 px-4 py-2 text-black hover:bg-gray-100 rounded-lg transition-colors">
                 <Link
-                    to={ENDPOINTS.USER.COURSES}
+                    to={ENDPOINTS.LANDING.COURSES}
                     className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
                   >
                     <ArrowLeft className="w-5 h-5" />

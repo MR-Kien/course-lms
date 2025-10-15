@@ -633,7 +633,7 @@ export default function Dashboard() {
 
                 {/* Action button */}
                 <button className="bg-[#301EA1] hover:bg-[#2515A0] text-white px-8 py-4 text-xl font-semibold rounded-2xl">
-                  <Link to={ENDPOINTS.USER.COURSES}>Đi đến khoá học</Link>
+                  <Link to={ENDPOINTS.LANDING.COURSES}>Đi đến khoá học</Link>
                 </button>
               </div>
 

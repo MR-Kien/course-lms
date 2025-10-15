@@ -142,7 +142,7 @@ export default function Index() {
               </div>
               <nav className="hidden md:flex items-center gap-6">
                 <Link
-                  to={ENDPOINTS.USER.DASHBOARD}
+                  to={ENDPOINTS.STUDENT.DASHBOARD}
                   className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
                 >
                   <ArrowLeft className="w-4 h-4" />
@@ -152,7 +152,7 @@ export default function Index() {
                   Khóa học
                 </a>
                 <Link
-                  to={ENDPOINTS.USER.CHATBOT}
+                  to={ENDPOINTS.SHARED.CHATBOT}
                   className="text-gray-600 hover:text-gray-900"
                 >
                   Chat với AI
@@ -161,7 +161,7 @@ export default function Index() {
                   Phần thưởng
                 </a>
                 <Link
-                  to={ENDPOINTS.USER.NEWS}
+                  to={ENDPOINTS.LANDING.NEWS}
                   className="text-gray-600 hover:text-gray-900"
                 >
                   Tin tức

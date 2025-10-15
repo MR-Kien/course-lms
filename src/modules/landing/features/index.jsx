@@ -499,7 +499,7 @@ export default function Landing() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="overflow-hidden">
-              <Link to={ENDPOINTS.USER.NEWS}>
+              <Link to={ENDPOINTS.LANDING.NEWS}>
                 <div className="aspect-video bg-gradient-to-r from-blue-400 to-blue-600"></div>
                 <CardContent className="p-4">
                   <h4 className="font-semibold mb-2">
@@ -514,7 +514,7 @@ export default function Landing() {
             </Card>
 
             <Card className="overflow-hidden">
-              <Link to={ENDPOINTS.USER.NEWS}>
+              <Link to={ENDPOINTS.LANDING.NEWS}>
                 <div className="aspect-video bg-gradient-to-r from-green-400 to-green-600"></div>
                 <CardContent className="p-4">
                   <h4 className="font-semibold mb-2">
@@ -529,7 +529,7 @@ export default function Landing() {
             </Card>
 
             <Card className="overflow-hidden">
-              <Link to={ENDPOINTS.USER.NEWS}>
+              <Link to={ENDPOINTS.LANDING.NEWS}>
                 <div className="aspect-video bg-gradient-to-r from-purple-400 to-purple-600"></div>
                 <CardContent className="p-4">
                   <h4 className="font-semibold mb-2">
@@ -544,7 +544,7 @@ export default function Landing() {
             </Card>
 
             <Card className="overflow-hidden">
-              <Link to={ENDPOINTS.USER.NEWS}>
+              <Link to={ENDPOINTS.LANDING.NEWS}>
                 <div className="aspect-video bg-gradient-to-r from-orange-400 to-orange-600"></div>
                 <CardContent className="p-4">
                   <h4 className="font-semibold mb-2">
