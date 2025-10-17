@@ -26,17 +26,26 @@ const LessonViewer = ({ lesson, courseId, onComplete, onNext, onPrev, onExit, is
   const [completedParts, setCompletedParts] = useState(initialCompletedParts); // Track completed parts
 
   const currentPart = lesson?.parts?.[currentPartIndex];
+  
+  // Debug log for UI state
+  console.log('LessonViewer render - completedParts:', Array.from(completedParts));
+  console.log('LessonViewer render - isCompleted:', isCompleted);
+  console.log('LessonViewer render - currentPartIndex:', currentPartIndex);
 
   // Sync completed parts with parent when they change
   useEffect(() => {
-    // Update local state when parent prop changes
-    if (initialCompletedParts.size !== completedParts.size) {
+    // Only update local state when parent prop changes and we don't have local changes
+    if (initialCompletedParts.size > completedParts.size) {
+      console.log('Syncing completedParts from parent:', Array.from(initialCompletedParts));
       setCompletedParts(initialCompletedParts);
     }
-  }, [completedParts, initialCompletedParts]);
+  }, [initialCompletedParts]);
 
   // Mark part as completed
   const markPartCompleted = async (partIndex) => {
+    console.log('Current completedParts state:', Array.from(completedParts));
+    console.log('Current partIndex:', partIndex);
+    
     // Nếu lesson đã hoàn thành, không cho phép mark lại
     if (isCompleted) {
       toast.info('Bài học đã hoàn thành!', {
@@ -56,26 +65,35 @@ const LessonViewer = ({ lesson, courseId, onComplete, onNext, onPrev, onExit, is
     }
     
     try {
+      console.log('Marking part as completed:', partIndex);
+      
       // Save part completion to database
       if (user?.uid && courseId && lesson?.id) {
         const result = await courseService.updatePartCompletion(user.uid, courseId, lesson.id, partIndex);
         if (!result.success) {
           console.error('Failed to save part completion:', result.error);
           // Continue with UI update even if database save fails
+        } else {
+          console.log('Part completion saved successfully');
         }
       }
       
       // Mark phần này là completed
       setCompletedParts(prev => {
         const newSet = new Set([...prev, partIndex]);
+        console.log('Previous completedParts:', Array.from(prev));
+        console.log('New completedParts:', Array.from(newSet));
         
         // Check if all parts are completed with the new set
         const allPartsCompleted = lesson.parts.every((_, index) => newSet.has(index));
+        console.log('All parts completed:', allPartsCompleted, 'Total parts:', lesson.parts.length);
         
         if (allPartsCompleted) {
           // All parts completed, now complete the entire lesson
+          console.log('All parts completed, calling onComplete...');
           setTimeout(async () => {
             if (onComplete) {
+              console.log('Calling onComplete callback');
               await onComplete();
               toast.success('Chúc mừng! Bạn đã hoàn thành toàn bộ bài học!', {
                 position: "top-right",

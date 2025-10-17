@@ -138,8 +138,11 @@ const CourseDetail = () => {
 
   const handleLessonComplete = async (lessonId) => {
     try {
+      console.log('handleLessonComplete called with lessonId:', lessonId);
+      
       // Kiểm tra xem lesson đã completed chưa
       if (completedLessons.has(lessonId)) {
+        console.log('Lesson already completed:', lessonId);
         toast.info('Bài học đã hoàn thành!', {
           position: "top-right",
           autoClose: 2000,
@@ -147,6 +150,7 @@ const CourseDetail = () => {
         return;
       }
       
+      console.log('Updating progress for lesson:', lessonId);
       const result = await courseService.updateProgress(studentId, courseId, lessonId, 100);
       if (result.success) {
         console.log('Lesson completed successfully:', lessonId);
