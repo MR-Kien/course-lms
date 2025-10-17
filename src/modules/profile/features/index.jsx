@@ -208,6 +208,24 @@ const Profile = () => {
                   </div>
                 </div>
 
+                {/* User Code - Chỉ hiển thị cho học sinh */}
+                {userData?.role === USER_ROLES.STUDENT && (
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                      <Shield className="w-4 h-4" />
+                      Mã học sinh
+                    </label>
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <span className="text-gray-900 font-mono text-lg">
+                        {userData?.userCode || "Chưa có mã"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      Mã này được sử dụng để phụ huynh liên kết với tài khoản của bạn
+                    </p>
+                  </div>
+                )}
+
                 {/* Display Name */}
                 <div className="space-y-2">
                   <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
