@@ -22,6 +22,9 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../../hooks/useAuth";
 import { USER_ROLES, SUBSCRIPTION_TYPES } from "../../../services/firebase";
+import { toast } from 'react-toastify';
+import CourseList from "../components/CourseList";
+import courseService from "../../../services/firebase/courseService";
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
@@ -29,6 +32,10 @@ const StudentDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const [loadingCourses, setLoadingCourses] = useState(false);
+  const [achievements, setAchievements] = useState([]);
+  const [loadingAchievements, setLoadingAchievements] = useState(false);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -54,73 +61,100 @@ const StudentDashboard = () => {
     }
   }, [logout]);
 
+  // Load enrolled courses
+  const loadEnrolledCourses = useCallback(async () => {
+    if (!userData?.uid) return;
+    
+    try {
+      setLoadingCourses(true);
+      const result = await courseService.getEnrolledCourses(userData.uid);
+      console.log('getEnrolledCourses result:', result);
+      if (result.success) {
+        console.log('Setting enrolled courses:', result.courses);
+        console.log('First course details:', result.courses[0]);
+        console.log('Course progress:', result.courses[0]?.progress);
+        setEnrolledCourses(result.courses);
+      }
+    } catch (error) {
+      console.error('Error loading enrolled courses:', error);
+    } finally {
+      setLoadingCourses(false);
+    }
+  }, [userData?.uid]);
+
+  // Load achievements
+  const loadAchievements = useCallback(async () => {
+    if (!userData?.uid) return;
+    
+    try {
+      setLoadingAchievements(true);
+      const result = await courseService.getStudentAchievements(userData.uid);
+      if (result.success) {
+        setAchievements(result.achievements);
+      }
+    } catch (error) {
+      console.error('Error loading achievements:', error);
+    } finally {
+      setLoadingAchievements(false);
+    }
+  }, [userData?.uid]);
+
+  // Handle course enrollment
+  const handleEnrollCourse = useCallback(async (course) => {
+    if (!userData?.uid) return;
+    
+    try {
+      const result = await courseService.enrollCourse(userData.uid, course.id);
+      if (result.success) {
+        // Reload enrolled courses
+        await loadEnrolledCourses();
+        toast.success('Đăng ký khóa học thành công!', {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      } else {
+        toast.error('Có lỗi xảy ra khi đăng ký khóa học', {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      }
+    } catch (error) {
+      console.error('Error enrolling course:', error);
+      toast.error('Có lỗi xảy ra khi đăng ký khóa học', {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    }
+  }, [userData?.uid, loadEnrolledCourses]);
+
+  // Load enrolled courses on mount
+  useEffect(() => {
+    loadEnrolledCourses();
+    loadAchievements();
+  }, [loadEnrolledCourses, loadAchievements]);
+
+  // Reload enrolled courses when component becomes visible (e.g., returning from course detail)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadEnrolledCourses();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [loadEnrolledCourses]);
+
   // Mock data
   const stats = {
-    coursesCompleted: 8,
-    totalPoints: 1250,
-    streakDays: 15,
-    averageScore: 85
+    coursesCompleted: enrolledCourses.filter(course => course.progress === 100).length,
+    totalPoints: enrolledCourses.reduce((sum, course) => sum + (course.points || 0), 0),
+    streakDays: 15, // TODO: Implement streak calculation
+    averageScore: enrolledCourses.length > 0 ? 
+      Math.round(enrolledCourses.reduce((sum, course) => sum + (course.averageScore || 0), 0) / enrolledCourses.length) : 0
   };
 
-  const enrolledCourses = [
-    {
-      id: 1,
-      title: "Toán học lớp 6",
-      teacher: "Cô Nguyễn Thị A",
-      progress: 75,
-      totalLessons: 20,
-      completedLessons: 15,
-      rating: 4.9,
-      thumbnail: "https://via.placeholder.com/300x200/4F46E5/FFFFFF?text=Math"
-    },
-    {
-      id: 2,
-      title: "Tiếng Anh lớp 6",
-      teacher: "Thầy Trần Văn B",
-      progress: 60,
-      totalLessons: 25,
-      completedLessons: 15,
-      rating: 4.7,
-      thumbnail: "https://via.placeholder.com/300x200/10B981/FFFFFF?text=English"
-    },
-    {
-      id: 3,
-      title: "Khoa học lớp 6",
-      teacher: "Cô Lê Thị C",
-      progress: 40,
-      totalLessons: 18,
-      completedLessons: 7,
-      rating: 4.8,
-      thumbnail: "https://via.placeholder.com/300x200/F59E0B/FFFFFF?text=Science"
-    }
-  ];
-
-  const achievements = [
-    {
-      id: 1,
-      title: "Học sinh chăm chỉ",
-      description: "Hoàn thành 5 bài học liên tiếp",
-      icon: Trophy,
-      earned: true,
-      date: "2024-01-10"
-    },
-    {
-      id: 2,
-      title: "Thiên tài toán học",
-      description: "Đạt điểm tối đa trong bài kiểm tra toán",
-      icon: Award,
-      earned: true,
-      date: "2024-01-08"
-    },
-    {
-      id: 3,
-      title: "Nhà vô địch",
-      description: "Xếp hạng #1 trong lớp",
-      icon: Crown,
-      earned: false,
-      date: null
-    }
-  ];
+  // Mock data for recent activities (will be replaced with real data later)
 
   const recentActivities = [
     {
@@ -288,7 +322,8 @@ const StudentDashboard = () => {
           <nav className="flex space-x-8">
             {[
               { id: "overview", label: "Tổng quan", icon: BarChart3 },
-              { id: "courses", label: "Khóa học", icon: BookOpen },
+              { id: "courses", label: "Khóa học của tôi", icon: BookOpen },
+              { id: "all-courses", label: "Tất cả khóa học", icon: BookOpen },
               { id: "achievements", label: "Thành tích", icon: Trophy },
               { id: "chatbot", label: "AI Chatbot", icon: MessageCircle }
             ].map((tab) => (
@@ -454,7 +489,7 @@ const StudentDashboard = () => {
                 <p className="text-sm text-gray-600">Tiếp tục học tập và phát triển kỹ năng</p>
               </div>
               <button 
-                onClick={() => navigate(ENDPOINTS.LANDING.COURSES)}
+                onClick={() => setActiveTab("all-courses")}
                 className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
               >
                 <BookOpen className="w-4 h-4" />
@@ -462,54 +497,91 @@ const StudentDashboard = () => {
               </button>
             </div>
 
-            {/* Courses Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {enrolledCourses.map((course) => (
-                <div key={course.id} className="bg-white rounded-lg shadow hover:shadow-lg transition">
-                  <div className="relative">
-                    <img 
-                      src={course.thumbnail} 
-                      alt={course.title}
-                      className="w-full h-40 object-cover rounded-t-lg"
-                    />
-                    <div className="absolute top-4 right-4 bg-white bg-opacity-90 px-2 py-1 rounded-full">
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                        <span className="text-sm font-medium">{course.rating}</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="p-6">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">{course.title}</h4>
-                    <p className="text-gray-600 text-sm mb-4">Giảng viên: {course.teacher}</p>
-                    
-                    <div className="space-y-2 mb-4">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Tiến độ:</span>
-                        <span className="font-medium">{course.progress}%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
-                          style={{ width: `${course.progress}%` }}
-                        ></div>
-                      </div>
-                      <div className="flex justify-between text-sm text-gray-600">
-                        <span>{course.completedLessons}/{course.totalLessons} bài học</span>
-                        <span>{Math.round(course.totalLessons * (100 - course.progress) / 100)} bài còn lại</span>
-                      </div>
-                    </div>
-                    
-                    <button className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
-                      <Play className="w-4 h-4" />
-                      Tiếp tục học
-                    </button>
-                  </div>
+            {/* Enrolled Courses */}
+            {loadingCourses ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                  <p className="text-gray-600">Đang tải khóa học...</p>
                 </div>
-              ))}
-            </div>
+              </div>
+            ) : enrolledCourses.length === 0 ? (
+              <div className="text-center py-12 bg-white rounded-lg shadow">
+                <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Chưa có khóa học nào</h3>
+                <p className="text-gray-600 mb-6">Hãy khám phá và đăng ký các khóa học phù hợp</p>
+                <button 
+                  onClick={() => setActiveTab("all-courses")}
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+                >
+                  Khám phá khóa học
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {enrolledCourses.map((course) => (
+                  <div key={course.id} className="bg-white rounded-lg shadow hover:shadow-lg transition">
+                    <div className="relative">
+                      {course.thumbnail ? (
+                        <img 
+                          src={course.thumbnail} 
+                          alt={course.title}
+                          className="w-full h-40 object-cover rounded-t-lg"
+                        />
+                      ) : (
+                        <div className="w-full h-40 bg-gradient-to-br from-blue-500 to-purple-600 rounded-t-lg flex items-center justify-center">
+                          <BookOpen className="w-16 h-16 text-white" />
+                        </div>
+                      )}
+                      <div className="absolute top-4 right-4 bg-white bg-opacity-90 px-2 py-1 rounded-full">
+                        <div className="flex items-center gap-1">
+                          <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                          <span className="text-sm font-medium">{course.averageRating || 5}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="p-6">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-2">{course.title}</h4>
+                      <p className="text-gray-600 text-sm mb-4">{course.subject} - Lớp {course.grade}</p>
+                      
+                      <div className="space-y-2 mb-4">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-600">Tiến độ:</span>
+                          <span className="font-medium">{course.progress || 0}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                            style={{ width: `${course.progress || 0}%` }}
+                          ></div>
+                        </div>
+                        <div className="flex justify-between text-sm text-gray-600">
+                          <span>{Array.isArray(course.completedLessons) ? course.completedLessons.length : (course.completedLessons || 0)}/{course.totalLessons || 0} bài học</span>
+                          <span>{Math.round((course.totalLessons || 0) * (100 - (course.progress || 0)) / 100)} bài còn lại</span>
+                        </div>
+                      </div>
+                      
+                      <button className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+                        onClick={() => navigate(`/student/course/${course.id}`)}
+                      >
+                        <Play className="w-4 h-4" />
+                        Tiếp tục học
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
+        )}
+
+        {activeTab === "all-courses" && (
+          <CourseList 
+            userRole={role}
+            subscriptionType={subscriptionType}
+            onEnrollCourse={handleEnrollCourse}
+          />
         )}
 
         {activeTab === "achievements" && (
@@ -521,37 +593,62 @@ const StudentDashboard = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {achievements.map((achievement) => (
-                <div key={achievement.id} className={`bg-white rounded-lg shadow p-6 ${
-                  achievement.earned ? 'ring-2 ring-yellow-400' : 'opacity-60'
-                }`}>
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                      achievement.earned ? 'bg-yellow-100' : 'bg-gray-100'
-                    }`}>
-                      <achievement.icon className={`w-6 h-6 ${
-                        achievement.earned ? 'text-yellow-600' : 'text-gray-400'
-                      }`} />
+            {loadingAchievements ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="bg-white rounded-lg shadow p-6 animate-pulse">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                      <div className="flex-1">
+                        <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">{achievement.title}</h4>
-                      <p className="text-sm text-gray-600">{achievement.description}</p>
-                    </div>
+                    <div className="h-4 bg-gray-200 rounded"></div>
                   </div>
-                  
-                  {achievement.earned ? (
+                ))}
+              </div>
+            ) : achievements.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {achievements.map((achievement) => (
+                  <div key={achievement.id} className="bg-white rounded-lg shadow p-6 ring-2 ring-yellow-400">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
+                        {achievement.type === 'course_completion' ? (
+                          <BookOpen className="w-6 h-6 text-yellow-600" />
+                        ) : achievement.type === 'exam_completion' ? (
+                          <Award className="w-6 h-6 text-yellow-600" />
+                        ) : (
+                          <Trophy className="w-6 h-6 text-yellow-600" />
+                        )}
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">{achievement.title}</h4>
+                        <p className="text-sm text-gray-600">{achievement.description}</p>
+                      </div>
+                    </div>
+                    
                     <div className="text-sm text-green-600 font-medium">
                       ✓ Đã đạt được - {new Date(achievement.date).toLocaleDateString('vi-VN')}
                     </div>
-                  ) : (
-                    <div className="text-sm text-gray-500">
-                      Chưa đạt được
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Trophy className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Chưa có thành tích nào</h3>
+                <p className="text-gray-600 mb-6">
+                  Hãy hoàn thành các khóa học và bài thi để nhận được thành tích đầu tiên!
+                </p>
+                <button 
+                  onClick={() => setActiveTab("courses")}
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+                >
+                  Khám phá khóa học
+                </button>
+              </div>
+            )}
           </div>
         )}
 

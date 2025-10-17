@@ -433,6 +433,7 @@
 //   );
 // }
 import { Check, CreditCard, Building, Crown } from "lucide-react";
+import { toast } from 'react-toastify';
 import momologo from "../../../assets/icons/momo.png";
 import zalopaylogo from "../../../assets/icons/zalopay.png";
 import { useNavigate } from "react-router-dom";
@@ -466,7 +467,10 @@ export default function Payment() {
   const handlePayment = (e) => {
     e.preventDefault();
     if (!agreeTerms) {
-      alert("Bạn cần đồng ý điều khoản trước khi thanh toán.");
+      toast.warning("Bạn cần đồng ý điều khoản trước khi thanh toán.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       return;
     }
     console.log("Processing payment with:", {

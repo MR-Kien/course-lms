@@ -15,6 +15,7 @@ VITE_FIREBASE_APP_ID=your_app_id
 VITE_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
 VITE_CLOUDINARY_API_KEY=your_cloudinary_api_key
 VITE_CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+VITE_CLOUDINARY_UPLOAD_PRESET=your_upload_preset_name
 
 # API Configuration
 VITE_API_URL=http://localhost:8765/api/iam
@@ -41,6 +42,12 @@ VITE_APP_VERSION=1.0.0
    - Cloud Name
    - API Key
    - API Secret
+4. Tạo **Upload Preset**:
+   - Vào **Settings** > **Upload**
+   - Click **Add upload preset**
+   - Đặt tên preset (ví dụ: `course_lms`)
+   - Chọn **Unsigned** để upload không cần signature
+   - Save preset
 
 ### 3. Cài đặt Dependencies
 ```bash

@@ -11,19 +11,23 @@ const ForgotPassword = () => {
   const { forgotPassword, isLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [isEmailSent, setIsEmailSent] = useState(false);
-  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
 
     if (!email.trim()) {
-      setError("Vui lòng nhập email");
+      toast.error("Vui lòng nhập email", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       return;
     }
 
     if (!/\S+@\S+\.\S+/.test(email)) {
-      setError("Email không hợp lệ");
+      toast.error("Email không hợp lệ", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       return;
     }
 
@@ -37,7 +41,6 @@ const ForgotPassword = () => {
         });
       }
     } catch (error) {
-      setError(error.message || "Có lỗi xảy ra khi gửi email");
       toast.error(error.message || "Có lỗi xảy ra khi gửi email", {
         position: "top-right",
         autoClose: 3000,
@@ -164,15 +167,8 @@ const ForgotPassword = () => {
             placeholder="Nhập email của bạn"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className={`w-full px-4 py-3 mt-1 mb-1 border rounded-[10px] focus:outline-none focus:ring-2 ${
-              error
-                ? "border-red-500 focus:ring-red-400"
-                : "border-gray-300 focus:ring-[#1d4ed8]"
-            }`}
+            className="w-full px-4 py-3 mt-1 mb-1 border border-gray-300 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-[#1d4ed8]"
           />
-          {error && (
-            <p className="text-red-500 text-sm mb-3">{error}</p>
-          )}
 
           <button
             type="submit"

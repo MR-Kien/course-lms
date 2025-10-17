@@ -204,15 +204,20 @@ class FirestoreService {
    */
   async updateDocument(collectionName, docId, data) {
     try {
+      console.log('updateDocument called with:', { collectionName, docId, data });
+      
       const docRef = doc(this.db, collectionName, docId);
       const updateData = {
         ...data,
         updatedAt: serverTimestamp()
       };
 
+      console.log('updateData:', updateData);
+      
       await updateDoc(docRef, updateData);
       return { success: true, id: docId };
     } catch (error) {
+      console.error('updateDocument error:', error);
       throw this.handleError(error);
     }
   }

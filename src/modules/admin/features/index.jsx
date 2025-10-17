@@ -19,10 +19,12 @@ import {
   UserPlus,
   DollarSign,
   ChevronDown,
-  User
+  User,
+  BookOpen
 } from "lucide-react";
 import { useAuth } from "../../../hooks/useAuth";
 import { USER_ROLES, legacyAuthService as AuthService } from "../../../services/firebase";
+import CourseManagement from "../components/CourseManagement";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -489,6 +491,7 @@ const AdminDashboard = () => {
           <nav className="flex space-x-8">
             {[
               { id: "overview", label: "Tổng quan", icon: BarChart3 },
+              { id: "courses", label: "Khóa học", icon: BookOpen },
               { id: "payments", label: "Thanh toán", icon: CreditCard },
               { id: "users", label: "Người dùng", icon: Users }
             ].map((tab) => (
@@ -610,6 +613,10 @@ const AdminDashboard = () => {
               </div>
             </div>
           </div>
+        )}
+
+        {activeTab === "courses" && (
+          <CourseManagement />
         )}
 
         {activeTab === "payments" && (
@@ -852,8 +859,8 @@ const AdminDashboard = () => {
 
       {/* Payment Detail Modal */}
       {isDetailModalOpen && selectedPayment && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-semibold text-gray-900">Chi tiết giao dịch</h3>

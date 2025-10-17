@@ -36,10 +36,23 @@ export const ENDPOINTS = Object.freeze({
   // Student Panel
   STUDENT: {
     DASHBOARD: "/student/dashboard",
+    STUDENT_ROOT: "/student", // Root student route
     COURSES: "/student/courses",
+    COURSE_DETAIL: "/student/course/:courseId",
     ACHIEVEMENTS: "/student/achievements",
     CHATBOT: "/student/chatbot",
     SETTINGS: "/student/settings",
+  },
+  
+  // Parent Features
+  PARENT: {
+    DASHBOARD: "/parent/dashboard",
+    COURSES: "/parent/courses",
+    COURSE_DETAIL: "/parent/course/:courseId",
+    PROGRESS: "/parent/progress",
+    ACHIEVEMENTS: "/parent/achievements",
+    CHILDREN: "/parent/children",
+    SETTINGS: "/parent/settings",
   },
   
   // Shared Features

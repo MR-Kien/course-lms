@@ -13,6 +13,7 @@ export { default as authService } from './authService';
 export { default as firestoreService } from './firestoreService';
 export { default as storageService } from './storageService';
 export { default as utilsService } from './utilsService';
+export { default as courseService } from './courseService';
 
 // Export legacy service for backward compatibility
 export { default as legacyAuthService } from './legacyAuthService';

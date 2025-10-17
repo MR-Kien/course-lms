@@ -27,7 +27,7 @@ const RequiredAuth = ({ children, path, requiredRoles = [] }) => {
 
   // Redirect if not authenticated
   if (!isAuthenticated) {
-    return <Navigate to={path} state={{ from: location }} replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
         // Check role permissions if required
@@ -142,10 +142,35 @@ const parentDashboardPage = {
   requiredRoles: ["parent"],
 };
 
+const parentCourseDetailPage = {
+  path: ENDPOINTS.PARENT.COURSE_DETAIL,
+  component: lazy(() => delayRoute()(import("../modules/parent/components/CourseDetail"))),
+  title: `Parent Course Detail | ${WEB_NAME}`,
+  Layout: LandingLayout,
+  requiredRoles: ["parent"],
+};
+
 // Student Routes
 const studentDashboardPage = {
   path: ENDPOINTS.STUDENT.DASHBOARD,
   component: lazy(() => delayRoute()(import("../modules/student/features/index"))),
+  title: `Student Dashboard | ${WEB_NAME}`,
+  Layout: LandingLayout,
+  requiredRoles: ["student"],
+};
+
+const studentCourseDetailPage = {
+  path: ENDPOINTS.STUDENT.COURSE_DETAIL,
+  component: lazy(() => delayRoute()(import("../modules/student/components/CourseDetail"))),
+  title: `Chi tiết khóa học | ${WEB_NAME}`,
+  Layout: LandingLayout,
+  requiredRoles: ["student"],
+};
+
+// Student root route (redirect to dashboard)
+const studentRootPage = {
+  path: ENDPOINTS.STUDENT.STUDENT_ROOT,
+  component: () => <Navigate to={ENDPOINTS.STUDENT.DASHBOARD} replace />,
   title: `Student Dashboard | ${WEB_NAME}`,
   Layout: LandingLayout,
   requiredRoles: ["student"],
@@ -200,7 +225,10 @@ export const publicRoutesData = [
   // Role-based Dashboards
   adminDashboardPage,
   parentDashboardPage,
+  parentCourseDetailPage,
   studentDashboardPage,
+  studentRootPage,
+  studentCourseDetailPage,
 
   // Shared Features
   subscriptionPage,
@@ -237,7 +265,7 @@ const renderRoutes = (routes, isPrivate = false) => {
     if (isPrivate) {
       element = (
         <RequiredAuth 
-          path={ENDPOINTS.AUTH.LOGIN}
+          path="/login"
           requiredRoles={route.requiredRoles}
         >
           {requiredPermissions ? (

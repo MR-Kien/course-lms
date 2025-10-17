@@ -178,6 +178,8 @@ export const useAuth = () => {
       dispatch(setLoading(true));
       await authService.logout();
       dispatch(clearUser());
+      // Redirect to login page after logout
+      window.location.href = '/login';
     } catch (error) {
       dispatch(setError(error.message));
       throw error;
