@@ -24,12 +24,18 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../../hooks/useAuth";
 import { USER_ROLES, legacyAuthService as AuthService } from "../../../services/firebase";
+import adminAnalyticsService from "../../../services/firebase/adminAnalyticsService";
 import CourseManagement from "../components/CourseManagement";
+import AdminReports from "../components/AdminReports";
+import AdminUserManagement from "../components/AdminUserManagement";
+import AdminSystemSettings from "../components/AdminSystemSettings";
+import AdminNotifications from "../components/AdminNotifications";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { userData, logout, role } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
+  const [currentView, setCurrentView] = useState("dashboard"); // 'dashboard', 'reports', 'user-management'
   const [searchTerm, setSearchTerm] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("all");
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
@@ -41,13 +47,13 @@ const AdminDashboard = () => {
   const [selectedPayments, setSelectedPayments] = useState([]);
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [stats, setStats] = useState({
-    totalUsers: 0,
-    totalTeachers: 0,
-    totalStudents: 0,
-    totalRevenue: 0,
-    pendingPayments: 0,
-    completedPayments: 0
+    users: { total: 0, byRole: { admin: 0, teacher: 0, student: 0, parent: 0 } },
+    courses: { total: 0, active: 0, inactive: 0, totalLessons: 0, totalExams: 0, totalEnrollments: 0, averageRating: 0 },
+    enrollments: { total: 0, completed: 0, inProgress: 0, averageProgress: 0 },
+    transactions: { total: 0, pending: 0, approved: 0, rejected: 0, totalRevenue: 0 },
+    recentActivities: []
   });
+  const [statsLoading, setStatsLoading] = useState(true);
   const dropdownRef = useRef(null);
 
   // Close dropdown when clicking outside
@@ -119,27 +125,13 @@ const AdminDashboard = () => {
   // Fetch dashboard stats
   const fetchStats = useCallback(async () => {
     try {
-      // Fetch all transactions to calculate stats
-      const allTransactions = await AuthService.getTransactions();
-      const transactions = allTransactions.transactions;
-      
-      // Calculate stats
-      const pendingCount = transactions.filter(t => t.status === 'pending').length;
-      const completedCount = transactions.filter(t => t.status === 'approved').length;
-      const rejectedCount = transactions.filter(t => t.status === 'rejected').length;
-      const totalRevenue = transactions
-        .filter(t => t.status === 'approved')
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
-      
-      setStats(prevStats => ({
-        ...prevStats,
-        pendingPayments: pendingCount,
-        completedPayments: completedCount,
-        rejectedPayments: rejectedCount,
-        totalRevenue: totalRevenue
-      }));
+      setStatsLoading(true);
+      const dashboardStats = await adminAnalyticsService.getDashboardStats();
+      setStats(dashboardStats);
     } catch (error) {
       console.error('Error fetching stats:', error);
+    } finally {
+      setStatsLoading(false);
     }
   }, []);
 
@@ -275,6 +267,27 @@ const AdminDashboard = () => {
       console.error('Error bulk rejecting payments:', error);
     }
   }, [selectedPayments, userData?.uid, fetchPayments, paymentTab, fetchStats]);
+
+  // Navigation handlers
+  const handleViewReports = () => {
+    setCurrentView('reports');
+  };
+
+  const handleViewUserManagement = () => {
+    setCurrentView('user-management');
+  };
+
+  const handleViewSystemSettings = () => {
+    setCurrentView('system-settings');
+  };
+
+  const handleViewNotifications = () => {
+    setCurrentView('notifications');
+  };
+
+  const handleBackToDashboard = () => {
+    setCurrentView('dashboard');
+  };
 
   // Update payments when paymentTab changes
   useEffect(() => {
@@ -414,6 +427,31 @@ const AdminDashboard = () => {
     return null;
   }
 
+  // Render different views
+  if (currentView === 'reports') {
+    return (
+      <AdminReports onBack={handleBackToDashboard} />
+    );
+  }
+
+  if (currentView === 'user-management') {
+    return (
+      <AdminUserManagement onBack={handleBackToDashboard} />
+    );
+  }
+
+  if (currentView === 'system-settings') {
+    return (
+      <AdminSystemSettings onBack={handleBackToDashboard} />
+    );
+  }
+
+  if (currentView === 'notifications') {
+    return (
+      <AdminNotifications onBack={handleBackToDashboard} />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -493,7 +531,9 @@ const AdminDashboard = () => {
               { id: "overview", label: "Tổng quan", icon: BarChart3 },
               { id: "courses", label: "Khóa học", icon: BookOpen },
               { id: "payments", label: "Thanh toán", icon: CreditCard },
-              { id: "users", label: "Người dùng", icon: Users }
+              { id: "users", label: "Người dùng", icon: Users },
+              { id: "settings", label: "Cài đặt", icon: Settings },
+              { id: "notifications", label: "Thông báo", icon: Bell }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -541,7 +581,9 @@ const AdminDashboard = () => {
                   </div>
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Tổng người dùng</p>
-                    <p className="text-2xl font-semibold text-gray-900">{stats.totalUsers.toLocaleString()}</p>
+                    <p className="text-2xl font-semibold text-gray-900">
+                      {statsLoading ? '...' : stats.users.total.toLocaleString()}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -549,11 +591,13 @@ const AdminDashboard = () => {
               <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex items-center">
                   <div className="p-2 bg-green-100 rounded-lg">
-                    <UserPlus className="w-6 h-6 text-green-600" />
+                    <BookOpen className="w-6 h-6 text-green-600" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Giáo viên</p>
-                    <p className="text-2xl font-semibold text-gray-900">{stats.totalTeachers}</p>
+                    <p className="text-sm font-medium text-gray-600">Tổng khóa học</p>
+                    <p className="text-2xl font-semibold text-gray-900">
+                      {statsLoading ? '...' : stats.courses.total}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -564,8 +608,10 @@ const AdminDashboard = () => {
                     <TrendingUp className="w-6 h-6 text-purple-600" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Doanh thu</p>
-                    <p className="text-2xl font-semibold text-gray-900">{stats.totalRevenue.toLocaleString('vi-VN')} VNĐ</p>
+                    <p className="text-sm font-medium text-gray-600">Tổng đăng ký</p>
+                    <p className="text-2xl font-semibold text-gray-900">
+                      {statsLoading ? '...' : stats.enrollments.total}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -573,11 +619,72 @@ const AdminDashboard = () => {
               <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex items-center">
                   <div className="p-2 bg-yellow-100 rounded-lg">
-                    <Clock className="w-6 h-6 text-yellow-600" />
+                    <DollarSign className="w-6 h-6 text-yellow-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Doanh thu</p>
+                    <p className="text-2xl font-semibold text-gray-900">
+                      {statsLoading ? '...' : stats.transactions.totalRevenue.toLocaleString('vi-VN')} VNĐ
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Additional Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-white rounded-lg shadow p-6">
+                <div className="flex items-center">
+                  <div className="p-2 bg-indigo-100 rounded-lg">
+                    <UserPlus className="w-6 h-6 text-indigo-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Học sinh</p>
+                    <p className="text-2xl font-semibold text-gray-900">
+                      {statsLoading ? '...' : stats.users.byRole.student || 0}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow p-6">
+                <div className="flex items-center">
+                  <div className="p-2 bg-orange-100 rounded-lg">
+                    <GraduationCapIcon className="w-6 h-6 text-orange-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Giáo viên</p>
+                    <p className="text-2xl font-semibold text-gray-900">
+                      {statsLoading ? '...' : stats.users.byRole.teacher || 0}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow p-6">
+                <div className="flex items-center">
+                  <div className="p-2 bg-red-100 rounded-lg">
+                    <Clock className="w-6 h-6 text-red-600" />
                   </div>
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Chờ duyệt</p>
-                    <p className="text-2xl font-semibold text-gray-900">{stats.pendingPayments}</p>
+                    <p className="text-2xl font-semibold text-gray-900">
+                      {statsLoading ? '...' : stats.transactions.pending}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow p-6">
+                <div className="flex items-center">
+                  <div className="p-2 bg-teal-100 rounded-lg">
+                    <BarChart3 className="w-6 h-6 text-teal-600" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Tiến độ TB</p>
+                    <p className="text-2xl font-semibold text-gray-900">
+                      {statsLoading ? '...' : `${stats.enrollments.averageProgress}%`}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -586,30 +693,59 @@ const AdminDashboard = () => {
             {/* Recent Activity */}
             <div className="bg-white rounded-lg shadow">
               <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">Hoạt động gần đây</h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-gray-900">Hoạt động gần đây</h3>
+                  <button
+                    onClick={handleViewReports}
+                    className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1"
+                  >
+                    Xem báo cáo chi tiết
+                    <BarChart3 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
               <div className="p-6">
-                <div className="space-y-4">
-                  {recentPayments.slice(0, 5).map((payment) => (
-                    <div key={payment.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <DollarSign className="w-5 h-5 text-blue-600" />
+                {statsLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  </div>
+                ) : stats.recentActivities.length > 0 ? (
+                  <div className="space-y-4">
+                    {stats.recentActivities.map((activity) => (
+                      <div key={activity.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-4">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            activity.type === 'enrollment' ? 'bg-blue-100' :
+                            activity.type === 'transaction' ? 'bg-green-100' :
+                            activity.type === 'completion' ? 'bg-purple-100' : 'bg-gray-100'
+                          }`}>
+                            {activity.type === 'enrollment' && <UserPlus className="w-5 h-5 text-blue-600" />}
+                            {activity.type === 'transaction' && <DollarSign className="w-5 h-5 text-green-600" />}
+                            {activity.type === 'completion' && <CheckCircle className="w-5 h-5 text-purple-600" />}
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">{activity.title}</p>
+                            <p className="text-sm text-gray-600">{activity.description}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium text-gray-900">{payment.user}</p>
-                          <p className="text-sm text-gray-600">{payment.email}</p>
+                        <div className="text-right">
+                          <p className="text-sm text-gray-500">
+                            {new Date(activity.timestamp).toLocaleDateString('vi-VN')}
+                          </p>
+                          {activity.status && (
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(activity.status)}`}>
+                              {getStatusText(activity.status)}
+                            </span>
+                          )}
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-gray-900">{payment.amount.toLocaleString('vi-VN')} VNĐ</p>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(payment.status)}`}>
-                          {getStatusText(payment.status)}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500">Không có hoạt động gần đây</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -649,9 +785,9 @@ const AdminDashboard = () => {
               <div className="border-b border-gray-200">
                 <nav className="flex space-x-8 px-6">
                   {[
-                    { id: "pending", label: "Chờ duyệt", count: stats.pendingPayments, color: "yellow" },
-                    { id: "completed", label: "Đã duyệt", count: stats.completedPayments, color: "green" },
-                    { id: "rejected", label: "Từ chối", count: stats.rejectedPayments, color: "red" }
+                    { id: "pending", label: "Chờ duyệt", count: stats.transactions.pending, color: "yellow" },
+                    { id: "completed", label: "Đã duyệt", count: stats.transactions.approved, color: "green" },
+                    { id: "rejected", label: "Từ chối", count: stats.transactions.rejected, color: "red" }
                   ].map((tab) => {
                     const getTabColors = (color, isActive) => {
                       const colors = {
@@ -851,7 +987,48 @@ const AdminDashboard = () => {
 
         {activeTab === "users" && (
           <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Quản lý người dùng</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Quản lý người dùng</h3>
+              <button
+                onClick={handleViewUserManagement}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              >
+                <Users className="w-4 h-4" />
+                Quản lý người dùng
+              </button>
+            </div>
+            <p className="text-gray-600">Tính năng đang phát triển...</p>
+          </div>
+        )}
+
+        {activeTab === "settings" && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Cài đặt hệ thống</h3>
+              <button
+                onClick={handleViewSystemSettings}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              >
+                <Settings className="w-4 h-4" />
+                Cài đặt hệ thống
+              </button>
+            </div>
+            <p className="text-gray-600">Tính năng đang phát triển...</p>
+          </div>
+        )}
+
+        {activeTab === "notifications" && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Quản lý thông báo</h3>
+              <button
+                onClick={handleViewNotifications}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              >
+                <Bell className="w-4 h-4" />
+                Quản lý thông báo
+              </button>
+            </div>
             <p className="text-gray-600">Tính năng đang phát triển...</p>
           </div>
         )}
