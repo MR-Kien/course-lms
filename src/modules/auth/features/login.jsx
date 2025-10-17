@@ -105,7 +105,7 @@
 //   );
 // }
 import robot from "../../../assets/images/robot.png";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { ENDPOINTS } from "../../../routes/endPoints";
@@ -118,7 +118,7 @@ import { USER_ROLES } from "../../../services/firebase";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login, loginWithGoogle, loginWithFacebook, isLoading, error } = useAuth();
+  const { login, loginWithGoogle, loginWithFacebook, isLoading, error, isAuthenticated, userData } = useAuth();
   
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -127,6 +127,20 @@ const Login = () => {
     username: "",
     password: "",
   });
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && userData) {
+      const userRole = userData.role;
+      if (userRole === USER_ROLES.ADMIN) {
+        navigate(ENDPOINTS.ADMIN.DASHBOARD, { replace: true });
+      } else if (userRole === USER_ROLES.PARENT) {
+        navigate(ENDPOINTS.PARENT.DASHBOARD, { replace: true });
+      } else {
+        navigate(ENDPOINTS.STUDENT.DASHBOARD, { replace: true });
+      }
+    }
+  }, [isAuthenticated, userData, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -154,26 +168,8 @@ const Login = () => {
           navigate(ENDPOINTS.ADMIN.DASHBOARD);
         } else if (userRole === USER_ROLES.PARENT) {
           navigate(ENDPOINTS.PARENT.DASHBOARD);
-        } else if (userRole === USER_ROLES.STUDENT) {
-          // Redirect based on user role
-        const userRole = result.userData?.role;
-        if (userRole === USER_ROLES.ADMIN) {
-          navigate(ENDPOINTS.ADMIN.DASHBOARD);
-        } else if (userRole === USER_ROLES.PARENT) {
-          navigate(ENDPOINTS.PARENT.DASHBOARD);
         } else {
           navigate(ENDPOINTS.STUDENT.DASHBOARD);
-        }
-        } else {
-          // Redirect based on user role
-        const userRole = result.userData?.role;
-        if (userRole === USER_ROLES.ADMIN) {
-          navigate(ENDPOINTS.ADMIN.DASHBOARD);
-        } else if (userRole === USER_ROLES.PARENT) {
-          navigate(ENDPOINTS.PARENT.DASHBOARD);
-        } else {
-          navigate(ENDPOINTS.STUDENT.DASHBOARD);
-        } // Default to student
         }
       }
     } catch (error) {

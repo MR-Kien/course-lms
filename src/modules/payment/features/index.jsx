@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { useAuth } from "../../../hooks/useAuth";
 import { SUBSCRIPTION_TYPES } from "../../../services/firebase";
 import { legacyAuthService as authService } from "../../../services/firebase";
+import { uploadImageToCloudinary } from "../../../configs/cloudinary.config";
 
 const PaymentUpgrade = () => {
   const navigate = useNavigate();
@@ -78,6 +79,18 @@ const PaymentUpgrade = () => {
 
     setIsLoading(true);
     try {
+      // Upload image to Cloudinary first
+      toast.info("Đang upload ảnh xác nhận...", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+
+      const uploadResult = await uploadImageToCloudinary(uploadedImage.file);
+      
+      if (!uploadResult.success) {
+        throw new Error(uploadResult.error || "Upload ảnh thất bại");
+      }
+
       // Create transaction for admin approval
       const transactionData = {
         userId: userData.uid,
@@ -87,7 +100,7 @@ const PaymentUpgrade = () => {
         planName: currentPlan.name,
         amount: currentPlan.price,
         period: currentPlan.period,
-        paymentProof: uploadedImage.file, // Send file instead of base64
+        paymentProof: uploadResult.url, // Store Cloudinary URL
         status: 'pending', // pending, approved, rejected
         createdAt: new Date().toISOString(),
         paymentMethod: 'bank_transfer'
@@ -103,6 +116,7 @@ const PaymentUpgrade = () => {
       
       navigate(ENDPOINTS.STUDENT.DASHBOARD);
     } catch (error) {
+      console.error("Payment upgrade error:", error);
       toast.error("Có lỗi xảy ra khi gửi yêu cầu. Vui lòng thử lại!", {
         position: "top-right",
         autoClose: 3000,

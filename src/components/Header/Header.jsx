@@ -17,6 +17,7 @@ import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { ENDPOINTS } from "../../routes/endPoints";
 import { USER_ROLES, SUBSCRIPTION_TYPES } from "../../services/firebase";
+import NotificationDropdown from "../NotificationDropdown";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -92,7 +93,7 @@ export default function Header() {
       </div>
 
       <div className="ml-auto flex items-center gap-4">
-        <Bell className="w-6 h-6 text-black" />
+        <NotificationDropdown userRole={role} />
         <div className="relative flex items-center gap-3 bg-gray-200/95 rounded-full px-4 py-2 shadow-lg">
           {/* Avatar */}
           <div className="w-10 h-10 bg-blue-700 rounded-full flex items-center justify-center">

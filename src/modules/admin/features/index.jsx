@@ -273,17 +273,6 @@ const AdminDashboard = () => {
     setCurrentView('reports');
   };
 
-  const handleViewUserManagement = () => {
-    setCurrentView('user-management');
-  };
-
-  const handleViewSystemSettings = () => {
-    setCurrentView('system-settings');
-  };
-
-  const handleViewNotifications = () => {
-    setCurrentView('notifications');
-  };
 
   const handleBackToDashboard = () => {
     setCurrentView('dashboard');
@@ -434,23 +423,6 @@ const AdminDashboard = () => {
     );
   }
 
-  if (currentView === 'user-management') {
-    return (
-      <AdminUserManagement onBack={handleBackToDashboard} />
-    );
-  }
-
-  if (currentView === 'system-settings') {
-    return (
-      <AdminSystemSettings onBack={handleBackToDashboard} />
-    );
-  }
-
-  if (currentView === 'notifications') {
-    return (
-      <AdminNotifications onBack={handleBackToDashboard} />
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -986,51 +958,15 @@ const AdminDashboard = () => {
         )}
 
         {activeTab === "users" && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Quản lý người dùng</h3>
-              <button
-                onClick={handleViewUserManagement}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-              >
-                <Users className="w-4 h-4" />
-                Quản lý người dùng
-              </button>
-            </div>
-            <p className="text-gray-600">Tính năng đang phát triển...</p>
-          </div>
+          <AdminUserManagement onBack={handleBackToDashboard} />
         )}
 
         {activeTab === "settings" && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Cài đặt hệ thống</h3>
-              <button
-                onClick={handleViewSystemSettings}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-              >
-                <Settings className="w-4 h-4" />
-                Cài đặt hệ thống
-              </button>
-            </div>
-            <p className="text-gray-600">Tính năng đang phát triển...</p>
-          </div>
+          <AdminSystemSettings onBack={handleBackToDashboard} />
         )}
 
         {activeTab === "notifications" && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Quản lý thông báo</h3>
-              <button
-                onClick={handleViewNotifications}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-              >
-                <Bell className="w-4 h-4" />
-                Quản lý thông báo
-              </button>
-            </div>
-            <p className="text-gray-600">Tính năng đang phát triển...</p>
-          </div>
+          <AdminNotifications onBack={handleBackToDashboard} />
         )}
       </div>
 

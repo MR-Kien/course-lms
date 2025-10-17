@@ -25,6 +25,8 @@ import {
   Shield
 } from 'lucide-react';
 import { toast } from 'react-toastify';
+import firestoreService from '../../../services/firebase/firestoreService';
+import CreateNotificationModal from './CreateNotificationModal';
 
 const AdminNotifications = ({ onBack }) => {
   const [activeTab, setActiveTab] = useState('all');
@@ -34,6 +36,7 @@ const AdminNotifications = ({ onBack }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedNotifications, setSelectedNotifications] = useState([]);
   const [isSelectAll, setIsSelectAll] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Mock notifications data
   const mockNotifications = [
@@ -103,21 +106,63 @@ const AdminNotifications = ({ onBack }) => {
     }
   ];
 
+  // Calculate tab counts based on actual notifications
   const tabs = [
-    { id: 'all', label: 'Tất cả', count: mockNotifications.length },
-    { id: 'sent', label: 'Đã gửi', count: mockNotifications.filter(n => n.status === 'sent').length },
-    { id: 'scheduled', label: 'Đã lên lịch', count: mockNotifications.filter(n => n.status === 'scheduled').length },
-    { id: 'draft', label: 'Bản nháp', count: mockNotifications.filter(n => n.status === 'draft').length }
+    { id: 'all', label: 'Tất cả', count: notifications.length },
+    { id: 'sent', label: 'Đã gửi', count: notifications.filter(n => n.status === 'sent').length },
+    { id: 'scheduled', label: 'Đã lên lịch', count: notifications.filter(n => n.status === 'scheduled').length },
+    { id: 'draft', label: 'Bản nháp', count: notifications.filter(n => n.status === 'draft').length }
   ];
 
   // Load notifications
   const loadNotifications = useCallback(async () => {
     try {
       setLoading(true);
-      setNotifications(mockNotifications);
+      
+      // Fetch notifications from Firebase
+      console.log('Fetching notifications from Firebase...');
+      const notificationsSnapshot = await firestoreService.getCollection('notifications');
+      console.log('Notifications snapshot:', notificationsSnapshot);
+      
+      // Handle different response formats
+      let notificationsData = [];
+      
+      if (Array.isArray(notificationsSnapshot)) {
+        notificationsData = notificationsSnapshot;
+      } else if (notificationsSnapshot && notificationsSnapshot.success && Array.isArray(notificationsSnapshot.data)) {
+        notificationsData = notificationsSnapshot.data;
+      }
+      
+      if (notificationsData.length > 0) {
+        const processedNotifications = notificationsData
+          .filter(notification => (notification.type || 'system') === 'system') // Only show system notifications
+          .map(notification => ({
+            id: notification.id || notification.uid || '',
+            title: notification.title || '',
+            content: notification.content || notification.message || '',
+            type: notification.type || 'system',
+            priority: notification.priority || 'normal',
+            status: notification.status || 'draft',
+            recipients: notification.recipients || 'all_users',
+            createdAt: notification.createdAt || notification.created_at || new Date().toISOString(),
+            sentAt: notification.sentAt || notification.sent_at || null,
+            scheduledAt: notification.scheduledAt || notification.scheduled_at || null,
+            readCount: notification.readCount || notification.read_count || 0,
+            totalRecipients: notification.totalRecipients || notification.total_recipients || 0
+          }));
+        
+        console.log('Processed system notifications data:', processedNotifications);
+        setNotifications(processedNotifications);
+        toast.success(`Đã tải ${processedNotifications.length} thông báo hệ thống`);
+      } else {
+        console.log('No notifications found or empty collection');
+        setNotifications([]);
+        toast.info('Không có thông báo nào trong hệ thống');
+      }
     } catch (error) {
       console.error('Error loading notifications:', error);
       toast.error('Không thể tải danh sách thông báo');
+      setNotifications([]);
     } finally {
       setLoading(false);
     }
@@ -126,6 +171,19 @@ const AdminNotifications = ({ onBack }) => {
   useEffect(() => {
     loadNotifications();
   }, [loadNotifications]);
+
+  // Handle create notification modal
+  const handleCreateNotification = () => {
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCloseCreateModal = () => {
+    setIsCreateModalOpen(false);
+  };
+
+  const handleCreateSuccess = () => {
+    loadNotifications(); // Reload notifications after creating
+  };
 
   // Filter notifications
   const filteredNotifications = notifications.filter(notification => {
@@ -210,9 +268,19 @@ const AdminNotifications = ({ onBack }) => {
     toast.info('Tính năng chỉnh sửa thông báo đang phát triển');
   };
 
-  const handleDeleteNotification = (notificationId) => {
-    setNotifications(prev => prev.filter(notif => notif.id !== notificationId));
-    toast.success('Đã xóa thông báo');
+  const handleDeleteNotification = async (notificationId) => {
+    try {
+      const result = await firestoreService.deleteDocument('notifications', notificationId);
+      if (result.success) {
+        setNotifications(prev => prev.filter(notif => notif.id !== notificationId));
+        toast.success('Đã xóa thông báo');
+      } else {
+        throw new Error('Không thể xóa thông báo');
+      }
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+      toast.error('Không thể xóa thông báo');
+    }
   };
 
   const handleViewNotification = (notificationId) => {
@@ -222,15 +290,23 @@ const AdminNotifications = ({ onBack }) => {
   const handleSendNotification = async (notificationId) => {
     try {
       setSending(true);
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
       
-      setNotifications(prev => prev.map(notif => 
-        notif.id === notificationId 
-          ? { ...notif, status: 'sent', sentAt: new Date().toISOString() }
-          : notif
-      ));
+      const result = await firestoreService.updateDocument('notifications', notificationId, {
+        status: 'sent',
+        sentAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
       
-      toast.success('Đã gửi thông báo');
+      if (result.success) {
+        setNotifications(prev => prev.map(notif => 
+          notif.id === notificationId 
+            ? { ...notif, status: 'sent', sentAt: new Date().toISOString() }
+            : notif
+        ));
+        toast.success('Đã gửi thông báo hệ thống');
+      } else {
+        throw new Error('Không thể gửi thông báo');
+      }
     } catch (error) {
       console.error('Error sending notification:', error);
       toast.error('Không thể gửi thông báo');
@@ -239,8 +315,31 @@ const AdminNotifications = ({ onBack }) => {
     }
   };
 
-  const handleScheduleNotification = (notificationId) => {
-    toast.info('Tính năng lên lịch thông báo đang phát triển');
+  const handleScheduleNotification = async (notificationId) => {
+    try {
+      const scheduledAt = new Date();
+      scheduledAt.setHours(scheduledAt.getHours() + 1); // Schedule 1 hour from now
+      
+      const result = await firestoreService.updateDocument('notifications', notificationId, {
+        status: 'scheduled',
+        scheduledAt: scheduledAt.toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      
+      if (result.success) {
+        setNotifications(prev => prev.map(notif => 
+          notif.id === notificationId 
+            ? { ...notif, status: 'scheduled', scheduledAt: scheduledAt.toISOString() }
+            : notif
+        ));
+        toast.success('Đã lên lịch thông báo hệ thống');
+      } else {
+        throw new Error('Không thể lên lịch thông báo');
+      }
+    } catch (error) {
+      console.error('Error scheduling notification:', error);
+      toast.error('Không thể lên lịch thông báo');
+    }
   };
 
   return (
@@ -258,13 +357,24 @@ const AdminNotifications = ({ onBack }) => {
                 <ArrowLeft className="w-6 h-6" />
               </button>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">Quản lý thông báo</h1>
+                <h1 className="text-xl font-semibold text-gray-900">Quản lý thông báo hệ thống</h1>
                 <p className="text-sm text-gray-600">{filteredNotifications.length} thông báo</p>
               </div>
             </div>
             
             <div className="flex items-center gap-4">
-              <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+              <button 
+                onClick={loadNotifications}
+                disabled={loading}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition"
+              >
+                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                Làm mới
+              </button>
+              <button 
+                onClick={handleCreateNotification}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              >
                 <Plus className="w-4 h-4" />
                 Tạo thông báo
               </button>
@@ -508,6 +618,13 @@ const AdminNotifications = ({ onBack }) => {
           </div>
         </div>
       </div>
+
+      {/* Create Notification Modal */}
+      <CreateNotificationModal
+        isOpen={isCreateModalOpen}
+        onClose={handleCloseCreateModal}
+        onSuccess={handleCreateSuccess}
+      />
     </div>
   );
 };

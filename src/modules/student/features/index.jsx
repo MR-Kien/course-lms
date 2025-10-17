@@ -36,6 +36,8 @@ const StudentDashboard = () => {
   const [loadingCourses, setLoadingCourses] = useState(false);
   const [achievements, setAchievements] = useState([]);
   const [loadingAchievements, setLoadingAchievements] = useState(false);
+  const [recentActivities, setRecentActivities] = useState([]);
+  const [loadingActivities, setLoadingActivities] = useState(true);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -79,6 +81,27 @@ const StudentDashboard = () => {
       console.error('Error loading enrolled courses:', error);
     } finally {
       setLoadingCourses(false);
+    }
+  }, [userData?.uid]);
+
+  // Load recent activities
+  const loadRecentActivities = useCallback(async () => {
+    if (!userData?.uid) return;
+    
+    try {
+      setLoadingActivities(true);
+      const result = await courseService.getStudentRecentActivities(userData.uid);
+      if (result.success) {
+        setRecentActivities(result.activities || []);
+      } else {
+        console.error('Error loading recent activities:', result.error);
+        setRecentActivities([]);
+      }
+    } catch (error) {
+      console.error('Error loading recent activities:', error);
+      setRecentActivities([]);
+    } finally {
+      setLoadingActivities(false);
     }
   }, [userData?.uid]);
 
@@ -131,7 +154,8 @@ const StudentDashboard = () => {
   useEffect(() => {
     loadEnrolledCourses();
     loadAchievements();
-  }, [loadEnrolledCourses, loadAchievements]);
+    loadRecentActivities();
+  }, [loadEnrolledCourses, loadAchievements, loadRecentActivities]);
 
   // Reload enrolled courses when component becomes visible (e.g., returning from course detail)
   useEffect(() => {
@@ -145,43 +169,30 @@ const StudentDashboard = () => {
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [loadEnrolledCourses]);
 
-  // Mock data
+  // Calculate stats with real data
   const stats = {
     coursesCompleted: enrolledCourses.filter(course => course.progress === 100).length,
     totalPoints: enrolledCourses.reduce((sum, course) => sum + (course.points || 0), 0),
-    streakDays: 15, // TODO: Implement streak calculation
+    streakDays: calculateLearningStreak(enrolledCourses),
     averageScore: enrolledCourses.length > 0 ? 
       Math.round(enrolledCourses.reduce((sum, course) => sum + (course.averageScore || 0), 0) / enrolledCourses.length) : 0
   };
 
-  // Mock data for recent activities (will be replaced with real data later)
+  // Calculate learning streak from enrolled courses
+  function calculateLearningStreak(courses) {
+    // For now, calculate based on total completed lessons
+    // In a real system, this would track daily activity logs
+    const totalCompletedLessons = courses.reduce((sum, course) => {
+      return sum + (Array.isArray(course.completedLessons) ? course.completedLessons.length : 0);
+    }, 0);
+    
+    // Estimate streak based on completed lessons (1 lesson = 1 day of activity)
+    const estimatedStreak = Math.min(30, Math.max(1, Math.floor(totalCompletedLessons / 2)));
+    
+    return estimatedStreak;
+  }
 
-  const recentActivities = [
-    {
-      id: 1,
-      type: "lesson_completed",
-      title: "Hoàn thành bài học: Phép cộng phân số",
-      course: "Toán học lớp 6",
-      points: 50,
-      time: "2 giờ trước"
-    },
-    {
-      id: 2,
-      type: "quiz_completed",
-      title: "Hoàn thành bài kiểm tra: Từ vựng tiếng Anh",
-      course: "Tiếng Anh lớp 6",
-      points: 80,
-      time: "1 ngày trước"
-    },
-    {
-      id: 3,
-      type: "achievement_earned",
-      title: "Nhận được thành tích: Học sinh chăm chỉ",
-      course: null,
-      points: 100,
-      time: "2 ngày trước"
-    }
-  ];
+  // Recent activities are now loaded from real data via loadRecentActivities()
 
   // Redirect if not student
   useEffect(() => {

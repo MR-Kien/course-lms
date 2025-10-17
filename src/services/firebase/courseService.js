@@ -1,4 +1,4 @@
-import { firestoreService } from './index';
+import firestoreService from './firestoreService';
 
 class CourseService {
   constructor() {
@@ -548,15 +548,19 @@ class CourseService {
         lastAccessedAt: new Date().toISOString()
       });
 
-      // Lưu kết quả bài thi
+      // Lưu kết quả bài thi với timestamp chính xác
       const examResultId = `${studentId}_${courseId}_${examId}`;
       const examResult = {
         id: examResultId,
         studentId,
         courseId,
         examId,
-        score: score,
-        completedAt: new Date().toISOString()
+        score: score?.percentage || score || 0, // Lưu percentage hoặc score number
+        earnedPoints: score?.earned || 0,
+        totalPoints: score?.total || 0,
+        percentage: score?.percentage || 0,
+        completedAt: new Date().toISOString(),
+        timestamp: Date.now()
       };
 
       await this.firestore.createDocument('exam_results', examResult, examResultId);
@@ -755,6 +759,19 @@ class CourseService {
       // Thêm lesson hiện tại vào danh sách nếu chưa có
       if (!completedLessons.includes(lessonId)) {
         completedLessons.push(lessonId);
+        
+        // Lưu lesson completion với timestamp
+        const lessonCompletionId = `${studentId}_${courseId}_${lessonId}`;
+        const lessonCompletion = {
+          id: lessonCompletionId,
+          studentId,
+          courseId,
+          lessonId,
+          completedAt: new Date().toISOString(),
+          timestamp: Date.now()
+        };
+        
+        await this.firestore.createDocument('lesson_completions', lessonCompletion, lessonCompletionId);
       }
 
       // Tính progress dựa trên số lesson đã hoàn thành
@@ -905,6 +922,205 @@ class CourseService {
       console.error('Error deleting exam:', error);
       throw error;
     }
+  }
+
+  // Get student's recent activities with real timestamps
+  async getStudentRecentActivities(studentId) {
+    try {
+      const activities = [];
+      
+      // Get lesson completions with real timestamps
+      const lessonCompletionsResult = await this.firestore.getCollection('lesson_completions');
+      let lessonCompletions = [];
+      
+      if (Array.isArray(lessonCompletionsResult)) {
+        lessonCompletions = lessonCompletionsResult;
+      } else if (lessonCompletionsResult?.success && Array.isArray(lessonCompletionsResult.data)) {
+        lessonCompletions = lessonCompletionsResult.data;
+      }
+
+      const studentLessonCompletions = lessonCompletions.filter(completion => 
+        completion.studentId === studentId
+      );
+
+      // Get exam results with real timestamps
+      const examResultsResult = await this.firestore.getCollection('exam_results');
+      let examResults = [];
+      
+      if (Array.isArray(examResultsResult)) {
+        examResults = examResultsResult;
+      } else if (examResultsResult?.success && Array.isArray(examResultsResult.data)) {
+        examResults = examResultsResult.data;
+      }
+
+      const studentExamResults = examResults.filter(result => 
+        result.studentId === studentId
+      );
+
+      // Get course details
+      const coursesResult = await this.firestore.getCollection('courses');
+      let courses = [];
+      
+      if (Array.isArray(coursesResult)) {
+        courses = coursesResult;
+      } else if (coursesResult?.success && Array.isArray(coursesResult.data)) {
+        courses = coursesResult.data;
+      }
+
+      // Generate activities from lesson completions
+      studentLessonCompletions.forEach(completion => {
+        const course = courses.find(c => (c.id || c.uid) === completion.courseId);
+        if (!course) return;
+
+        const lesson = course.lessons?.find(l => l.id === completion.lessonId);
+        if (lesson) {
+          activities.push({
+            id: completion.id,
+            type: 'lesson_completed',
+            title: `Hoàn thành bài học: ${lesson.title}`,
+            course: course.title,
+            points: 50, // Default points for lesson completion
+            time: this.getTimeAgo(completion.completedAt),
+            timestamp: completion.timestamp
+          });
+        }
+      });
+
+      // Generate activities from exam results
+      studentExamResults.forEach(result => {
+        const course = courses.find(c => (c.id || c.uid) === result.courseId);
+        if (!course) return;
+
+        const exam = course.exams?.find(e => e.id === result.examId);
+        if (exam) {
+          activities.push({
+            id: result.id,
+            type: 'quiz_completed',
+            title: `Hoàn thành bài kiểm tra: ${exam.title}`,
+            course: course.title,
+            points: result.score || 80,
+            time: this.getTimeAgo(result.completedAt),
+            timestamp: result.timestamp
+          });
+        }
+      });
+
+      // Sort by timestamp and return recent activities
+      return {
+        success: true,
+        activities: activities
+          .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
+          .slice(0, 10)
+      };
+    } catch (error) {
+      console.error('Error getting student recent activities:', error);
+      return {
+        success: false,
+        error: error.message,
+        activities: []
+      };
+    }
+  }
+
+  // Get completed parts for a specific lesson
+  async getCompletedParts(studentId, courseId, lessonId) {
+    try {
+      const lessonCompletionsResult = await this.firestore.getCollection('lesson_completions');
+      let lessonCompletions = [];
+      
+      if (Array.isArray(lessonCompletionsResult)) {
+        lessonCompletions = lessonCompletionsResult;
+      } else if (lessonCompletionsResult?.success && Array.isArray(lessonCompletionsResult.data)) {
+        lessonCompletions = lessonCompletionsResult.data;
+      }
+
+      // Filter completions for this specific lesson
+      const lessonSpecificCompletions = lessonCompletions.filter(completion => 
+        completion.studentId === studentId && 
+        completion.courseId === courseId && 
+        completion.lessonId === lessonId
+      );
+
+      // Get course to access lesson parts
+      const courseResult = await this.firestore.getDocument('courses', courseId);
+      
+      // Check if courseResult has success property or is direct data
+      let course;
+      if (courseResult && typeof courseResult === 'object') {
+        if (courseResult.success !== undefined) {
+          // Has success property
+          if (!courseResult.success) {
+            return { success: false, completedParts: new Set() };
+          }
+          course = courseResult.data;
+        } else {
+          // Direct data
+          course = courseResult;
+        }
+      } else {
+        return { success: false, completedParts: new Set() };
+      }
+
+      const lesson = course.lessons?.find(l => l.id === lessonId);
+      if (!lesson || !lesson.parts) {
+        return { success: false, completedParts: new Set() };
+      }
+
+      // For now, if lesson is completed, mark all parts as completed
+      // In the future, we can track individual part completions
+      const completedParts = new Set();
+      
+      // Check if lesson is completed
+      const enrollmentResult = await this.firestore.getCollection('enrollments');
+      let enrollments = [];
+      
+      if (Array.isArray(enrollmentResult)) {
+        enrollments = enrollmentResult;
+      } else if (enrollmentResult?.success && Array.isArray(enrollmentResult.data)) {
+        enrollments = enrollmentResult.data;
+      }
+
+      const studentEnrollment = enrollments.find(e => 
+        e.studentId === studentId && e.courseId === courseId
+      );
+
+      if (studentEnrollment && studentEnrollment.completedLessons?.includes(lessonId)) {
+        // Lesson is completed, mark all parts as completed
+        lesson.parts.forEach((_, index) => {
+          completedParts.add(index);
+        });
+      }
+
+      return {
+        success: true,
+        completedParts: completedParts
+      };
+    } catch (error) {
+      console.error('Error getting completed parts:', error);
+      return {
+        success: false,
+        error: error.message,
+        completedParts: new Set()
+      };
+    }
+  }
+
+  // Helper method to calculate time ago
+  getTimeAgo(timestamp) {
+    if (!timestamp) return 'Không xác định';
+    
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diffInHours = Math.floor((now - time) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) return 'Vừa xong';
+    if (diffInHours < 24) return `${diffInHours} giờ trước`;
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays} ngày trước`;
+    
+    const diffInWeeks = Math.floor(diffInDays / 7);
+    return `${diffInWeeks} tuần trước`;
   }
 }
 

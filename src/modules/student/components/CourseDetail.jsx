@@ -35,6 +35,7 @@ const CourseDetail = () => {
   const [currentExamIndex, setCurrentExamIndex] = useState(0);
   const [completedLessons, setCompletedLessons] = useState(new Set());
   const [completedExams, setCompletedExams] = useState(new Set());
+  const [completedParts, setCompletedParts] = useState(new Map()); // Map lessonId -> Set of completed parts
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [studentRating, setStudentRating] = useState(null);
   const studentId = 'FewUVCMbr7QZBoW2pwVqx1NZtXm1'; // Use correct student ID from enrollment
@@ -98,10 +99,37 @@ const CourseDetail = () => {
     }
   };
 
+  const loadCompletedParts = async (lessonId) => {
+    try {
+      const result = await courseService.getCompletedParts(studentId, courseId, lessonId);
+      if (result.success) {
+        setCompletedParts(prev => {
+          const newMap = new Map(prev);
+          newMap.set(lessonId, result.completedParts);
+          return newMap;
+        });
+      }
+    } catch (error) {
+      console.error('Error loading completed parts:', error);
+    }
+  };
+
   const handleStartLesson = (lessonIndex) => {
     setCurrentLessonIndex(lessonIndex);
     setCurrentView('lesson');
+    
+    // Load completed parts for this lesson
+    const lessonId = course.lessons[lessonIndex].id;
+    loadCompletedParts(lessonId);
   };
+
+  // Load completed parts when lesson view is active
+  useEffect(() => {
+    if (currentView === 'lesson' && course?.lessons?.[currentLessonIndex]) {
+      const lessonId = course.lessons[currentLessonIndex].id;
+      loadCompletedParts(lessonId);
+    }
+  }, [currentView, currentLessonIndex, course]);
 
   const handleStartExam = (examIndex) => {
     setCurrentExamIndex(examIndex);
@@ -121,15 +149,26 @@ const CourseDetail = () => {
       
       const result = await courseService.updateProgress(studentId, courseId, lessonId, 100);
       if (result.success) {
+        console.log('Lesson completed successfully:', lessonId);
         setCompletedLessons(prev => {
           const newSet = new Set([...prev, lessonId]);
+          console.log('Updated completedLessons:', Array.from(newSet));
           return newSet;
         });
+        
+        // Reload progress to ensure UI is in sync
+        const progressResult = await courseService.getStudentProgress(studentId, courseId);
+        if (progressResult.success) {
+          setCompletedLessons(new Set(progressResult.completedLessons || []));
+          setCompletedExams(new Set(progressResult.completedExams || []));
+        }
+        
         toast.success('Hoàn thành bài học!', {
           position: "top-right",
           autoClose: 2000,
         });
       } else {
+        console.error('Failed to update progress:', result);
         toast.error('Có lỗi xảy ra khi cập nhật tiến độ');
       }
     } catch (error) {
@@ -233,6 +272,7 @@ const CourseDetail = () => {
         }}
         onExit={handleBackToOverview}
         isCompleted={completedLessons.has(course.lessons[currentLessonIndex].id)}
+        completedParts={completedParts.get(course.lessons[currentLessonIndex].id) || new Set()}
       />
     );
   }

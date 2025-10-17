@@ -132,16 +132,18 @@ const Profile = () => {
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
                   {userData?.displayName || "Người dùng"}
                 </h2>
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    subscriptionType === SUBSCRIPTION_TYPES.PREMIUM 
-                      ? "bg-purple-100 text-purple-700" 
-                      : "bg-gray-100 text-gray-700"
-                  }`}>
-                    {subscriptionType === SUBSCRIPTION_TYPES.PREMIUM && <Crown className="w-4 h-4 inline mr-1" />}
-                    {getSubscriptionDisplayName(subscriptionType)}
-                  </span>
-                </div>
+                {userData?.role !== USER_ROLES.ADMIN && (
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      subscriptionType === SUBSCRIPTION_TYPES.PREMIUM 
+                        ? "bg-purple-100 text-purple-700" 
+                        : "bg-gray-100 text-gray-700"
+                    }`}>
+                      {subscriptionType === SUBSCRIPTION_TYPES.PREMIUM && <Crown className="w-4 h-4 inline mr-1" />}
+                      {getSubscriptionDisplayName(subscriptionType)}
+                    </span>
+                  </div>
+                )}
                 <p className="text-gray-600">
                   {getRoleDisplayName(userData?.role)}
                 </p>
@@ -157,7 +159,7 @@ const Profile = () => {
                   {isEditing ? "Hủy chỉnh sửa" : "Chỉnh sửa thông tin"}
                 </button>
 
-                {subscriptionType === SUBSCRIPTION_TYPES.FREE && (
+                {subscriptionType === SUBSCRIPTION_TYPES.FREE && userData?.role !== USER_ROLES.ADMIN && (
                   <button
                     onClick={handleUpgradeToPremium}
                     className="w-full flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-colors"
@@ -325,40 +327,42 @@ const Profile = () => {
               </div>
             </div>
 
-            {/* Subscription Status */}
-            <div className="mt-6 bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Trạng thái gói học</h3>
-              
-              <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
-                <div className="flex items-center gap-3">
-                  {subscriptionType === SUBSCRIPTION_TYPES.PREMIUM ? (
-                    <Crown className="w-8 h-8 text-purple-600" />
-                  ) : (
-                    <Star className="w-8 h-8 text-blue-600" />
-                  )}
-                  <div>
-                    <h4 className="font-semibold text-gray-900">
-                      Gói {getSubscriptionDisplayName(subscriptionType)}
-                    </h4>
-                    <p className="text-sm text-gray-600">
-                      {subscriptionType === SUBSCRIPTION_TYPES.PREMIUM 
-                        ? "Truy cập đầy đủ tất cả tính năng"
-                        : "Truy cập các tính năng cơ bản"
-                      }
-                    </p>
-                  </div>
-                </div>
+            {/* Subscription Status - Only show for non-admin users */}
+            {userData?.role !== USER_ROLES.ADMIN && (
+              <div className="mt-6 bg-white rounded-xl shadow-lg p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Trạng thái gói học</h3>
                 
-                {subscriptionType === SUBSCRIPTION_TYPES.FREE && (
-                  <button
-                    onClick={handleUpgradeToPremium}
-                    className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-colors"
-                  >
-                    Nâng cấp ngay
-                  </button>
-                )}
+                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    {subscriptionType === SUBSCRIPTION_TYPES.PREMIUM ? (
+                      <Crown className="w-8 h-8 text-purple-600" />
+                    ) : (
+                      <Star className="w-8 h-8 text-blue-600" />
+                    )}
+                    <div>
+                      <h4 className="font-semibold text-gray-900">
+                        Gói {getSubscriptionDisplayName(subscriptionType)}
+                      </h4>
+                      <p className="text-sm text-gray-600">
+                        {subscriptionType === SUBSCRIPTION_TYPES.PREMIUM 
+                          ? "Truy cập đầy đủ tất cả tính năng"
+                          : "Truy cập các tính năng cơ bản"
+                        }
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {subscriptionType === SUBSCRIPTION_TYPES.FREE && userData?.role !== USER_ROLES.ADMIN && (
+                    <button
+                      onClick={handleUpgradeToPremium}
+                      className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-colors"
+                    >
+                      Nâng cấp ngay
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

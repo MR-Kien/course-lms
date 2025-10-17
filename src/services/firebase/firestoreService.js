@@ -48,7 +48,11 @@ export const COLLECTIONS = {
   CHAT_MESSAGES: 'chatMessages',
   ASSIGNMENTS: 'assignments',
   QUIZZES: 'quizzes',
-  CERTIFICATES: 'certificates'
+  CERTIFICATES: 'certificates',
+  LESSON_COMPLETIONS: 'lesson_completions',
+  EXAM_RESULTS: 'exam_results',
+  CHAT_SESSIONS: 'chat_sessions',
+  CHAT_MESSAGES: 'chat_messages'
 };
 
 class FirestoreService {

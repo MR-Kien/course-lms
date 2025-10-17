@@ -7,8 +7,6 @@ import {
   Target,
   CheckCircle,
   PlayCircle,
-  BarChart3,
-  LineChart,
   PieChart,
   ArrowLeft,
   Filter,
@@ -17,6 +15,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import courseService from '../../../services/firebase/courseService';
+import { parentService } from '../../../services/firebase';
 
 const ParentProgressTracking = ({ selectedChild, onBack }) => {
   const [timeRange, setTimeRange] = useState('week'); // 'week', 'month', 'year'
@@ -24,6 +23,7 @@ const ParentProgressTracking = ({ selectedChild, onBack }) => {
   const [loading, setLoading] = useState(true);
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [recentActivities, setRecentActivities] = useState([]);
 
   // Load progress data
   const loadProgressData = useCallback(async () => {
@@ -38,38 +38,23 @@ const ParentProgressTracking = ({ selectedChild, onBack }) => {
         setCourses(coursesResult.courses || []);
       }
       
-      // Mock progress data (trong thực tế sẽ fetch từ analytics service)
-      const mockProgressData = {
-        overallProgress: 75,
-        weeklyProgress: [
-          { day: 'T2', lessons: 3, time: 45, score: 85 },
-          { day: 'T3', lessons: 2, time: 30, score: 90 },
-          { day: 'T4', lessons: 4, time: 60, score: 78 },
-          { day: 'T5', lessons: 1, time: 20, score: 95 },
-          { day: 'T6', lessons: 3, time: 50, score: 88 },
-          { day: 'T7', lessons: 2, time: 35, score: 82 },
-          { day: 'CN', lessons: 1, time: 25, score: 90 }
-        ],
-        monthlyProgress: [
-          { week: 'Tuần 1', progress: 20, lessons: 8, time: 120 },
-          { week: 'Tuần 2', progress: 45, lessons: 12, time: 180 },
-          { week: 'Tuần 3', progress: 65, lessons: 15, time: 225 },
-          { week: 'Tuần 4', progress: 75, lessons: 18, time: 270 }
-        ],
-        courseProgress: [
-          { courseId: 'course_1', title: 'Toán lớp 3', progress: 80, lessons: 12, completed: 10 },
-          { courseId: 'course_2', title: 'Tiếng Việt lớp 3', progress: 60, lessons: 8, completed: 5 },
-          { courseId: 'course_3', title: 'Khoa học lớp 3', progress: 90, lessons: 6, completed: 6 }
-        ],
-        achievements: [
-          { type: 'streak', title: 'Chuỗi học tập', value: '7 ngày', icon: '🔥' },
-          { type: 'time', title: 'Thời gian học', value: '15 giờ', icon: '⏰' },
-          { type: 'lessons', title: 'Bài học hoàn thành', value: '25 bài', icon: '📚' },
-          { type: 'score', title: 'Điểm trung bình', value: '8.5/10', icon: '⭐' }
-        ]
-      };
+      // Load real progress analytics
+      const analyticsResult = await parentService.getChildProgressAnalytics(selectedChild.id);
+      if (analyticsResult.success) {
+        setProgressData(analyticsResult.analytics);
+      } else {
+        console.error('Error loading analytics:', analyticsResult.error);
+        toast.error('Không thể tải dữ liệu phân tích');
+      }
       
-      setProgressData(mockProgressData);
+      // Load recent activities
+      const activitiesResult = await parentService.getChildRecentActivities(selectedChild.id);
+      if (activitiesResult.success) {
+        setRecentActivities(activitiesResult.activities || []);
+      } else {
+        console.error('Error loading activities:', activitiesResult.error);
+        setRecentActivities([]);
+      }
     } catch (error) {
       console.error('Error loading progress data:', error);
       toast.error('Không thể tải dữ liệu tiến độ');
@@ -170,12 +155,8 @@ const ParentProgressTracking = ({ selectedChild, onBack }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Weekly Progress Chart */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-4">
+            <div className="mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Tiến độ tuần</h3>
-              <div className="flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-gray-400" />
-                <span className="text-sm text-gray-600">Biểu đồ cột</span>
-              </div>
             </div>
             
             <div className="space-y-4">
@@ -208,12 +189,8 @@ const ParentProgressTracking = ({ selectedChild, onBack }) => {
 
           {/* Monthly Progress Chart */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-4">
+            <div className="mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Tiến độ tháng</h3>
-              <div className="flex items-center gap-2">
-                <LineChart className="w-5 h-5 text-gray-400" />
-                <span className="text-sm text-gray-600">Biểu đồ đường</span>
-              </div>
             </div>
             
             <div className="space-y-4">
@@ -292,23 +269,28 @@ const ParentProgressTracking = ({ selectedChild, onBack }) => {
             <h3 className="text-lg font-semibold text-gray-900">Chuỗi học tập</h3>
             <div className="flex items-center gap-2">
               <span className="text-2xl">🔥</span>
-              <span className="text-sm text-gray-600">7 ngày liên tiếp</span>
+              <span className="text-sm text-gray-600">
+                {progressData?.achievements?.find(a => a.type === 'streak')?.value || '0 ngày'}
+              </span>
             </div>
           </div>
           
           <div className="grid grid-cols-7 gap-2">
-            {Array.from({ length: 7 }, (_, index) => (
-              <div key={index} className="text-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                  index < 7 ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
-                }`}>
-                  {index + 1}
+            {Array.from({ length: 7 }, (_, index) => {
+              const streakDays = parseInt(progressData?.achievements?.find(a => a.type === 'streak')?.value?.replace(' ngày', '') || '0');
+              return (
+                <div key={index} className="text-center">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                    index < streakDays ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
+                  }`}>
+                    {index + 1}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1">
+                    {['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'][index]}
+                  </div>
                 </div>
-                <div className="text-xs text-gray-500 mt-1">
-                  {['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'][index]}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -316,43 +298,46 @@ const ParentProgressTracking = ({ selectedChild, onBack }) => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Hoạt động gần đây</h3>
           
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle className="w-4 h-4 text-green-600" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">
-                  Hoàn thành bài học "Phép cộng có nhớ"
-                </p>
-                <p className="text-xs text-gray-500">2 giờ trước • Điểm: 95%</p>
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                <p className="text-sm text-gray-600">Đang tải hoạt động...</p>
               </div>
             </div>
-            
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                <PlayCircle className="w-4 h-4 text-blue-600" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">
-                  Bắt đầu học bài "Phép trừ có nhớ"
-                </p>
-                <p className="text-xs text-gray-500">1 ngày trước</p>
-              </div>
+          ) : recentActivities && recentActivities.length > 0 ? (
+            <div className="space-y-3">
+              {recentActivities.map((activity, index) => (
+                <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                    activity.type === 'course_completion' ? 'bg-green-100' :
+                    activity.type === 'lesson_completion' ? 'bg-blue-100' :
+                    'bg-gray-100'
+                  }`}>
+                    {activity.type === 'course_completion' ? (
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                    ) : activity.type === 'lesson_completion' ? (
+                      <PlayCircle className="w-4 h-4 text-blue-600" />
+                    ) : (
+                      <Clock className="w-4 h-4 text-gray-600" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900">
+                      {activity.description}
+                    </p>
+                    <p className="text-xs text-gray-500">{activity.timeAgo}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-            
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                <Target className="w-4 h-4 text-yellow-600" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">
-                  Hoàn thành bài thi "Kiểm tra giữa kỳ"
-                </p>
-                <p className="text-xs text-gray-500">3 ngày trước • Điểm: 88/100</p>
-              </div>
+          ) : (
+            <div className="text-center py-8">
+              <Clock className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+              <h4 className="text-sm font-medium text-gray-900 mb-1">Chưa có hoạt động</h4>
+              <p className="text-xs text-gray-600">Con bạn chưa có hoạt động nào gần đây</p>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

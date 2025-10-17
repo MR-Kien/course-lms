@@ -22,6 +22,7 @@ const CourseList = ({ userRole, subscriptionType, onEnrollCourse }) => {
   const [courses, setCourses] = useState([]);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [enrollingCourseId, setEnrollingCourseId] = useState(null); // Track which course is being enrolled
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLevel, setSelectedLevel] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');
@@ -116,6 +117,9 @@ const CourseList = ({ userRole, subscriptionType, onEnrollCourse }) => {
       return;
     }
 
+    // Set loading state để disable button
+    setEnrollingCourseId(course.id);
+
     try {
       if (onEnrollCourse) {
         await onEnrollCourse(course);
@@ -129,6 +133,9 @@ const CourseList = ({ userRole, subscriptionType, onEnrollCourse }) => {
         position: "top-right",
         autoClose: 3000,
       });
+    } finally {
+      // Clear loading state
+      setEnrollingCourseId(null);
     }
   };
 
@@ -370,14 +377,19 @@ const CourseList = ({ userRole, subscriptionType, onEnrollCourse }) => {
                     e.stopPropagation();
                     handleEnrollCourse(course);
                   }}
-                  disabled={!canAccessCourse(course)}
+                  disabled={!canAccessCourse(course) || enrollingCourseId === course.id}
                   className={`w-full flex items-center justify-center gap-2 py-2 rounded-lg transition ${
-                    canAccessCourse(course)
+                    canAccessCourse(course) && enrollingCourseId !== course.id
                       ? 'bg-blue-600 text-white hover:bg-blue-700'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}
                 >
-                  {canAccessCourse(course) ? (
+                  {enrollingCourseId === course.id ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <span>Đang đăng ký...</span>
+                    </>
+                  ) : canAccessCourse(course) ? (
                     <>
                       <Play className="w-4 h-4" />
                       <span>{enrolledCourses.includes(course.id) ? 'Tiếp tục học' : 'Bắt đầu học'}</span>

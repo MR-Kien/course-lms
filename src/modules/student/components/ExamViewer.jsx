@@ -92,13 +92,41 @@ const ExamViewer = ({ exam, onComplete, onNext, onPrev, onExit, timeLimit = null
   // Submit exam
   const handleSubmit = () => {
     setIsSubmitted(true);
-    calculateScore();
+    
+    // Calculate score first
+    let totalPoints = 0;
+    let earnedPoints = 0;
+
+    // Calculate multiple choice scores
+    exam.questions?.multipleChoice?.forEach(q => {
+      totalPoints += q.points;
+      if (answers[q.id] === q.correctAnswer) {
+        earnedPoints += q.points;
+      }
+    });
+
+    // Essay questions are manually graded (assume full points for now)
+    exam.questions?.essay?.forEach(q => {
+      totalPoints += q.points;
+      if (answers[q.id] && answers[q.id].trim().length > 0) {
+        earnedPoints += q.points; // Assume full points for essay answers
+      }
+    });
+
+    const percentage = totalPoints > 0 ? Math.round((earnedPoints / totalPoints) * 100) : 0;
+    const calculatedScore = {
+      earned: earnedPoints,
+      total: totalPoints,
+      percentage: percentage
+    };
+    
+    setScore(calculatedScore);
     setShowResults(true);
     setIsCompleted(true);
     
-    // Gọi onComplete với score
+    // Gọi onComplete với calculated score
     if (onComplete) {
-      onComplete(score);
+      onComplete(calculatedScore);
     }
     
     toast.success('Nộp bài thi thành công!', {
@@ -185,52 +213,103 @@ const ExamViewer = ({ exam, onComplete, onNext, onPrev, onExit, timeLimit = null
 
   if (showResults && score) {
     return (
-      <div className="h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4">
-          <div className="text-center">
-            <div className={`w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center ${
-              score.percentage >= 70 ? 'bg-green-100' : 'bg-red-100'
-            }`}>
-              <Trophy className={`w-8 h-8 ${
-                score.percentage >= 70 ? 'text-green-600' : 'text-red-600'
-              }`} />
-            </div>
-            
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              {score.percentage >= 70 ? 'Chúc mừng!' : 'Cần cố gắng thêm!'}
-            </h2>
-            
-            <p className="text-gray-600 mb-6">
-              {score.percentage >= 70 
-                ? 'Bạn đã vượt qua bài thi!' 
-                : 'Hãy ôn tập lại và thử lại nhé!'
-              }
-            </p>
-
-            <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <div className="text-3xl font-bold text-gray-900 mb-1">
-                {score.percentage}%
+      <div className="h-screen bg-gray-50 overflow-y-auto">
+        <div className="max-w-4xl mx-auto p-6">
+          {/* Results Header */}
+          <div className="bg-white rounded-lg shadow-lg p-8 mb-6">
+            <div className="text-center">
+              <div className={`w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center ${
+                score.percentage >= 70 ? 'bg-green-100' : 'bg-red-100'
+              }`}>
+                <Trophy className={`w-8 h-8 ${
+                  score.percentage >= 70 ? 'text-green-600' : 'text-red-600'
+                }`} />
               </div>
-              <div className="text-sm text-gray-600">
-                {score.earned} / {score.total} điểm
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <button
-                onClick={resetExam}
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
-              >
-                <RotateCcw className="w-4 h-4 inline mr-2" />
-                Làm lại bài thi
-              </button>
               
-              <button
-                onClick={() => onExit && onExit()}
-                className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition"
-              >
-                Quay lại khóa học
-              </button>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                {score.percentage >= 70 ? 'Chúc mừng!' : 'Cần cố gắng thêm!'}
+              </h2>
+              
+              <p className="text-gray-600 mb-6">
+                {score.percentage >= 70 
+                  ? 'Bạn đã vượt qua bài thi!' 
+                  : 'Hãy ôn tập lại và thử lại nhé!'
+                }
+              </p>
+
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <div className="text-3xl font-bold text-gray-900 mb-1">
+                  {score.percentage}%
+                </div>
+                <div className="text-sm text-gray-600">
+                  {score.earned} / {score.total} điểm
+                </div>
+              </div>
+
+              <div className="flex gap-3 justify-center">
+                <button
+                  onClick={resetExam}
+                  className="bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition"
+                >
+                  <RotateCcw className="w-4 h-4 inline mr-2" />
+                  Làm lại bài thi
+                </button>
+                
+                <button
+                  onClick={() => onExit && onExit()}
+                  className="bg-gray-100 text-gray-700 py-2 px-6 rounded-lg hover:bg-gray-200 transition"
+                >
+                  Quay lại khóa học
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Detailed Results */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Chi tiết kết quả</h3>
+            <div className="space-y-4">
+              {exam.questions?.multipleChoice?.map((question, index) => {
+                const userAnswer = answers[question.id];
+                const isCorrect = userAnswer === question.correctAnswer;
+                return (
+                  <div key={question.id} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <h4 className="font-medium text-gray-900">Câu {index + 1}</h4>
+                      <div className={`px-2 py-1 rounded text-sm font-medium ${
+                        isCorrect ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                      }`}>
+                        {isCorrect ? 'Đúng' : 'Sai'}
+                      </div>
+                    </div>
+                    
+                    <div className="mb-3">
+                      <div 
+                        className="text-gray-900 leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: question.question }}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="text-sm text-gray-600">Đáp án của bạn:</div>
+                      <div className={`p-2 rounded ${
+                        isCorrect ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
+                      }`}>
+                        <strong>{String.fromCharCode(65 + userAnswer)}.</strong> {question.options[userAnswer]}
+                      </div>
+                      
+                      {!isCorrect && (
+                        <>
+                          <div className="text-sm text-gray-600">Đáp án đúng:</div>
+                          <div className="p-2 rounded bg-green-50 text-green-800">
+                            <strong>{String.fromCharCode(65 + question.correctAnswer)}.</strong> {question.options[question.correctAnswer]}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -367,10 +446,9 @@ const ExamViewer = ({ exam, onComplete, onNext, onPrev, onExit, timeLimit = null
                   Câu hỏi:
                 </h2>
                 <div className="prose max-w-none">
-                  <CKEditorComponent
-                    value={currentQuestion.question}
-                    onChange={() => {}} // Read-only
-                    readOnly={true}
+                  <div 
+                    className="text-gray-900 leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: currentQuestion.question }}
                   />
                 </div>
               </div>
@@ -383,16 +461,20 @@ const ExamViewer = ({ exam, onComplete, onNext, onPrev, onExit, timeLimit = null
                   </h3>
                   <div className="space-y-3">
                     {currentQuestion.options.map((option, index) => (
-                      <label key={index} className="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                      <label key={index} className="flex items-start p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition">
                         <input
                           type="radio"
                           name={`question_${currentQuestion.id}`}
                           value={index}
                           checked={answers[currentQuestion.id] === index}
                           onChange={(e) => handleAnswerChange(currentQuestion.id, parseInt(e.target.value))}
-                          className="mr-3"
+                          className="mt-1 mr-3 w-4 h-4 text-blue-600"
                         />
-                        <span className="text-gray-900">{option}</span>
+                        <div className="flex-1">
+                          <span className="text-gray-900 leading-relaxed">
+                            <strong>{String.fromCharCode(65 + index)}.</strong> {option}
+                          </span>
+                        </div>
                       </label>
                     ))}
                   </div>

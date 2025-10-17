@@ -14,6 +14,10 @@ export { default as firestoreService } from './firestoreService';
 export { default as storageService } from './storageService';
 export { default as utilsService } from './utilsService';
 export { default as courseService } from './courseService';
+export { default as parentService } from './parentService';
+export { default as notificationService } from './notificationService';
+export { default as adminAnalyticsService } from './adminAnalyticsService';
+export { default as aiService } from './aiService';
 
 // Export legacy service for backward compatibility
 export { default as legacyAuthService } from './legacyAuthService';

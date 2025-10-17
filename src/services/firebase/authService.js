@@ -87,6 +87,19 @@ class AuthService {
   }
 
   /**
+   * Generate unique user code for students
+   * @returns {string} - 6 character alphanumeric code
+   */
+  generateUserCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < 6; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  }
+
+  /**
    * Register new user with email and password
    * @param {string} email - User email
    * @param {string} password - User password
@@ -106,8 +119,8 @@ class AuthService {
         displayName: userData.displayName || userData.fullName
       });
 
-      // Save user data to Firestore
-      await setDoc(doc(db, 'users', user.uid), {
+      // Prepare user data for Firestore
+      const firestoreUserData = {
         uid: user.uid,
         email: user.email,
         displayName: userData.displayName || userData.fullName,
@@ -117,7 +130,15 @@ class AuthService {
         updatedAt: new Date(),
         isEmailVerified: false,
         ...userData
-      });
+      };
+
+      // Generate userCode for students
+      if (firestoreUserData.role === USER_ROLES.STUDENT) {
+        firestoreUserData.userCode = this.generateUserCode();
+      }
+
+      // Save user data to Firestore
+      await setDoc(doc(db, 'users', user.uid), firestoreUserData);
 
       return { success: true, user };
     } catch (error) {

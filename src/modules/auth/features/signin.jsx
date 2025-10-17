@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ENDPOINTS } from "../../../routes/endPoints";
 import { GraduationCapIcon } from "lucide-react";
@@ -11,7 +11,7 @@ import robot from "../../../assets/images/robot.png";
 
 const SignIn = () => {
   const navigate = useNavigate();
-  const { register, loginWithGoogle, loginWithFacebook, isLoading } = useAuth();
+  const { register, loginWithGoogle, loginWithFacebook, isLoading, isAuthenticated, userData } = useAuth();
   
   const [formData, setFormData] = useState({
     fullName: "",
@@ -27,6 +27,20 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && userData) {
+      const userRole = userData.role;
+      if (userRole === USER_ROLES.ADMIN) {
+        navigate(ENDPOINTS.ADMIN.DASHBOARD, { replace: true });
+      } else if (userRole === USER_ROLES.PARENT) {
+        navigate(ENDPOINTS.PARENT.DASHBOARD, { replace: true });
+      } else {
+        navigate(ENDPOINTS.STUDENT.DASHBOARD, { replace: true });
+      }
+    }
+  }, [isAuthenticated, userData, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

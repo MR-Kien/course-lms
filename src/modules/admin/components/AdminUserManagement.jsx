@@ -17,10 +17,12 @@ import {
   ChevronDown,
   CheckCircle,
   XCircle,
-  RefreshCw
+  RefreshCw,
+  ArrowLeft,
+  Copy
 } from 'lucide-react';
 import { toast } from 'react-toastify';
-import adminAnalyticsService from '../../../services/firebase/adminAnalyticsService';
+import firestoreService from '../../../services/firebase/firestoreService';
 
 const AdminUserManagement = ({ onBack }) => {
   const [users, setUsers] = useState([]);
@@ -30,74 +32,81 @@ const AdminUserManagement = ({ onBack }) => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [isSelectAll, setIsSelectAll] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [viewingUser, setViewingUser] = useState(null);
+  const [formData, setFormData] = useState({
+    email: '',
+    displayName: '',
+    role: 'student',
+    phone: '',
+    grade: '',
+    subscription: 'free'
+  });
+
+  // Generate user code for students
+  const generateUserCode = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < 6; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  };
 
   // Load users
   const loadUsers = useCallback(async () => {
     try {
       setLoading(true);
-      // Mock users data - in real implementation, this would fetch from Firebase
-      const mockUsers = [
-        {
-          id: 'user_1',
-          email: 'admin@learnly.com',
-          displayName: 'Admin User',
-          role: 'admin',
-          status: 'active',
-          createdAt: '2024-01-01T00:00:00Z',
-          lastLogin: '2024-01-15T10:30:00Z',
-          phone: '+84 123 456 789',
-          avatar: ''
-        },
-        {
-          id: 'user_2',
-          email: 'teacher1@learnly.com',
-          displayName: 'Nguyễn Văn A',
-          role: 'teacher',
-          status: 'active',
-          createdAt: '2024-01-02T00:00:00Z',
-          lastLogin: '2024-01-14T15:20:00Z',
-          phone: '+84 987 654 321',
-          avatar: ''
-        },
-        {
-          id: 'user_3',
-          email: 'student1@learnly.com',
-          displayName: 'Trần Thị B',
-          role: 'student',
-          status: 'active',
-          createdAt: '2024-01-03T00:00:00Z',
-          lastLogin: '2024-01-15T08:45:00Z',
-          phone: '+84 456 789 123',
-          avatar: ''
-        },
-        {
-          id: 'user_4',
-          email: 'parent1@learnly.com',
-          displayName: 'Lê Văn C',
-          role: 'parent',
-          status: 'active',
-          createdAt: '2024-01-04T00:00:00Z',
-          lastLogin: '2024-01-13T20:15:00Z',
-          phone: '+84 789 123 456',
-          avatar: ''
-        },
-        {
-          id: 'user_5',
-          email: 'teacher2@learnly.com',
-          displayName: 'Phạm Thị D',
-          role: 'teacher',
-          status: 'inactive',
-          createdAt: '2024-01-05T00:00:00Z',
-          lastLogin: '2024-01-10T12:30:00Z',
-          phone: '+84 321 654 987',
-          avatar: ''
-        }
-      ];
       
-      setUsers(mockUsers);
+      // Fetch users from Firebase
+      console.log('Fetching users from Firebase...');
+      const usersSnapshot = await firestoreService.getCollection('users');
+      console.log('Users snapshot:', usersSnapshot);
+      
+      // Handle different response formats
+      let usersData = [];
+      
+      if (Array.isArray(usersSnapshot)) {
+        // Direct array response
+        usersData = usersSnapshot;
+      } else if (usersSnapshot && usersSnapshot.success && Array.isArray(usersSnapshot.data)) {
+        // Object with success and data properties
+        usersData = usersSnapshot.data;
+      } else if (usersSnapshot && Array.isArray(usersSnapshot)) {
+        // Another array format
+        usersData = usersSnapshot;
+      }
+      
+      if (usersData.length > 0) {
+        const processedUsers = usersData.map(user => ({
+          id: user.id || user.uid || '',
+          email: user.email || '',
+          displayName: user.displayName || user.name || user.display_name || 'Không có tên',
+          role: user.role || 'student',
+          status: user.status || 'active',
+          createdAt: user.createdAt || user.created_at || new Date().toISOString(),
+          lastLogin: user.lastLoginAt || user.lastLogin || user.last_login || new Date().toISOString(),
+          phone: user.phone || user.phoneNumber || '',
+          avatar: user.avatar || user.photoURL || user.avatar_url || '',
+          subscription: user.subscription || 'free',
+          grade: user.grade || '',
+          userCode: user.userCode || user.user_code || (user.role === 'student' ? generateUserCode() : null)
+        }));
+        
+        console.log('Processed users data:', processedUsers);
+        setUsers(processedUsers);
+        toast.success(`Đã tải ${processedUsers.length} người dùng`);
+      } else {
+        console.log('No users found or empty collection');
+        setUsers([]);
+        toast.info('Không có người dùng nào trong hệ thống');
+      }
     } catch (error) {
       console.error('Error loading users:', error);
       toast.error('Không thể tải danh sách người dùng');
+      setUsers([]);
     } finally {
       setLoading(false);
     }
@@ -163,24 +172,259 @@ const AdminUserManagement = ({ onBack }) => {
 
   // Handle user actions
   const handleEditUser = (userId) => {
-    toast.info('Tính năng chỉnh sửa người dùng đang phát triển');
+    const user = users.find(u => u.id === userId);
+    if (user) {
+      setEditingUser(user);
+      setFormData({
+        email: user.email || '',
+        displayName: user.displayName || '',
+        role: user.role || 'student',
+        phone: user.phone || '',
+        grade: user.grade || '',
+        subscription: user.subscription || 'free'
+      });
+      setIsModalOpen(true);
+    }
   };
 
-  const handleDeleteUser = (userId) => {
-    toast.info('Tính năng xóa người dùng đang phát triển');
+  const handleAddUser = () => {
+    setEditingUser(null);
+    setFormData({
+      email: '',
+      displayName: '',
+      role: 'student',
+      phone: '',
+      grade: '',
+      subscription: 'free'
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingUser(null);
+    setFormData({
+      email: '',
+      displayName: '',
+      role: 'student',
+      phone: '',
+      grade: '',
+      subscription: 'free'
+    });
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const userData = {
+        ...formData,
+        status: 'active',
+        createdAt: editingUser ? editingUser.createdAt : new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      // Add userCode for students
+      if (formData.role === 'student' && !editingUser?.userCode) {
+        userData.userCode = generateUserCode();
+      }
+
+      if (editingUser) {
+        // Update existing user
+        const result = await firestoreService.updateDocument('users', editingUser.id, userData);
+        if (result.success) {
+          setUsers(prev => prev.map(user => 
+            user.id === editingUser.id 
+              ? { ...user, ...userData }
+              : user
+          ));
+          toast.success('Đã cập nhật người dùng thành công');
+        } else {
+          throw new Error('Không thể cập nhật người dùng');
+        }
+      } else {
+        // Create new user
+        const result = await firestoreService.createDocument('users', userData);
+        if (result.success) {
+          const newUser = { id: result.id, ...userData };
+          setUsers(prev => [...prev, newUser]);
+          toast.success('Đã tạo người dùng thành công');
+        } else {
+          throw new Error('Không thể tạo người dùng');
+        }
+      }
+      
+      handleCloseModal();
+    } catch (error) {
+      console.error('Error saving user:', error);
+      toast.error(editingUser ? 'Không thể cập nhật người dùng' : 'Không thể tạo người dùng');
+    }
+  };
+
+  const handleDeleteUser = async (userId) => {
+    try {
+      const result = await firestoreService.deleteDocument('users', userId);
+      if (result.success) {
+        setUsers(prev => prev.filter(user => user.id !== userId));
+        toast.success('Đã xóa người dùng thành công');
+      } else {
+        throw new Error('Không thể xóa người dùng');
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      toast.error('Không thể xóa người dùng');
+    }
   };
 
   const handleViewUser = (userId) => {
-    toast.info('Tính năng xem chi tiết người dùng đang phát triển');
+    const user = users.find(u => u.id === userId);
+    if (user) {
+      setViewingUser(user);
+      setIsDetailModalOpen(true);
+    }
   };
 
-  const handleToggleStatus = (userId) => {
-    setUsers(prev => prev.map(user => 
-      user.id === userId 
-        ? { ...user, status: user.status === 'active' ? 'inactive' : 'active' }
-        : user
-    ));
-    toast.success('Đã cập nhật trạng thái người dùng');
+  const handleCloseDetailModal = () => {
+    setIsDetailModalOpen(false);
+    setViewingUser(null);
+  };
+
+  const handleToggleStatus = async (userId) => {
+    try {
+      const user = users.find(u => u.id === userId);
+      if (!user) return;
+
+      const newStatus = user.status === 'active' ? 'inactive' : 'active';
+      
+      const result = await firestoreService.updateDocument('users', userId, {
+        status: newStatus,
+        updatedAt: new Date().toISOString()
+      });
+
+      if (result.success) {
+        setUsers(prev => prev.map(u => 
+          u.id === userId 
+            ? { ...u, status: newStatus }
+            : u
+        ));
+        toast.success(`Đã ${newStatus === 'active' ? 'kích hoạt' : 'vô hiệu hóa'} người dùng`);
+      } else {
+        throw new Error('Không thể cập nhật trạng thái');
+      }
+    } catch (error) {
+      console.error('Error toggling user status:', error);
+      toast.error('Không thể cập nhật trạng thái người dùng');
+    }
+  };
+
+  // Handle copy user code
+  const handleCopyCode = (userCode) => {
+    navigator.clipboard.writeText(userCode).then(() => {
+      toast.success(`Đã sao chép mã: ${userCode}`);
+    }).catch(() => {
+      toast.error('Không thể sao chép mã');
+    });
+  };
+
+  // Handle generate user code
+  const handleGenerateCode = async (userId) => {
+    try {
+      const newCode = generateUserCode();
+      
+      const result = await firestoreService.updateDocument('users', userId, {
+        userCode: newCode,
+        updatedAt: new Date().toISOString()
+      });
+
+      if (result.success) {
+        setUsers(prev => prev.map(user => 
+          user.id === userId 
+            ? { ...user, userCode: newCode }
+            : user
+        ));
+        toast.success(`Đã tạo mã học sinh: ${newCode}`);
+      } else {
+        throw new Error('Không thể tạo mã học sinh');
+      }
+    } catch (error) {
+      console.error('Error generating user code:', error);
+      toast.error('Không thể tạo mã học sinh');
+    }
+  };
+
+  // Bulk actions
+  const handleBulkActivate = async () => {
+    try {
+      const promises = selectedUsers.map(userId => 
+        firestoreService.updateDocument('users', userId, {
+          status: 'active',
+          updatedAt: new Date().toISOString()
+        })
+      );
+      
+      await Promise.all(promises);
+      
+      setUsers(prev => prev.map(user => 
+        selectedUsers.includes(user.id) 
+          ? { ...user, status: 'active' }
+          : user
+      ));
+      
+      setSelectedUsers([]);
+      setIsSelectAll(false);
+      toast.success(`Đã kích hoạt ${selectedUsers.length} người dùng`);
+    } catch (error) {
+      console.error('Error bulk activating users:', error);
+      toast.error('Không thể kích hoạt người dùng');
+    }
+  };
+
+  const handleBulkDeactivate = async () => {
+    try {
+      const promises = selectedUsers.map(userId => 
+        firestoreService.updateDocument('users', userId, {
+          status: 'inactive',
+          updatedAt: new Date().toISOString()
+        })
+      );
+      
+      await Promise.all(promises);
+      
+      setUsers(prev => prev.map(user => 
+        selectedUsers.includes(user.id) 
+          ? { ...user, status: 'inactive' }
+          : user
+      ));
+      
+      setSelectedUsers([]);
+      setIsSelectAll(false);
+      toast.success(`Đã vô hiệu hóa ${selectedUsers.length} người dùng`);
+    } catch (error) {
+      console.error('Error bulk deactivating users:', error);
+      toast.error('Không thể vô hiệu hóa người dùng');
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (!confirm(`Bạn có chắc chắn muốn xóa ${selectedUsers.length} người dùng?`)) {
+      return;
+    }
+
+    try {
+      const promises = selectedUsers.map(userId => 
+        firestoreService.deleteDocument('users', userId)
+      );
+      
+      await Promise.all(promises);
+      
+      setUsers(prev => prev.filter(user => !selectedUsers.includes(user.id)));
+      setSelectedUsers([]);
+      setIsSelectAll(false);
+      toast.success(`Đã xóa ${selectedUsers.length} người dùng`);
+    } catch (error) {
+      console.error('Error bulk deleting users:', error);
+      toast.error('Không thể xóa người dùng');
+    }
   };
 
   return (
@@ -204,7 +448,18 @@ const AdminUserManagement = ({ onBack }) => {
             </div>
             
             <div className="flex items-center gap-4">
-              <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+              <button
+                onClick={loadUsers}
+                disabled={loading}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition"
+              >
+                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                Làm mới
+              </button>
+              <button 
+                onClick={handleAddUser}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              >
                 <UserPlus className="w-4 h-4" />
                 Thêm người dùng
               </button>
@@ -273,11 +528,23 @@ const AdminUserManagement = ({ onBack }) => {
                   </span>
                 </div>
                 <div className="flex space-x-2">
-                  <button className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700">
+                  <button 
+                    onClick={handleBulkActivate}
+                    className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700"
+                  >
                     Kích hoạt ({selectedUsers.length})
                   </button>
-                  <button className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700">
+                  <button 
+                    onClick={handleBulkDeactivate}
+                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700"
+                  >
                     Vô hiệu hóa ({selectedUsers.length})
+                  </button>
+                  <button 
+                    onClick={handleBulkDelete}
+                    className="px-4 py-2 text-sm font-medium text-white bg-gray-600 border border-transparent rounded-md hover:bg-gray-700"
+                  >
+                    Xóa ({selectedUsers.length})
                   </button>
                 </div>
               </div>
@@ -307,6 +574,9 @@ const AdminUserManagement = ({ onBack }) => {
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Vai trò
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Mã học sinh
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Trạng thái
@@ -355,6 +625,31 @@ const AdminUserManagement = ({ onBack }) => {
                               {roleInfo.label}
                             </span>
                           </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {user.role === 'student' && user.userCode ? (
+                            <div className="flex items-center gap-2">
+                              <span className="font-mono text-sm font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded">
+                                {user.userCode}
+                              </span>
+                              <button
+                                onClick={() => handleCopyCode(user.userCode)}
+                                className="text-gray-400 hover:text-gray-600"
+                                title="Sao chép mã"
+                              >
+                                <Copy className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ) : user.role === 'student' ? (
+                            <button
+                              onClick={() => handleGenerateCode(user.id)}
+                              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                            >
+                              Tạo mã
+                            </button>
+                          ) : (
+                            <span className="text-gray-400 text-sm">-</span>
+                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(user.status)}`}>
@@ -416,6 +711,344 @@ const AdminUserManagement = ({ onBack }) => {
           </div>
         </div>
       </div>
+
+      {/* User Detail Modal */}
+      {isDetailModalOpen && viewingUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">Chi tiết người dùng</h2>
+                <button
+                  onClick={handleCloseDetailModal}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <XCircle className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* User Info */}
+                <div className="lg:col-span-2 space-y-6">
+                  {/* Basic Info */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">Thông tin cơ bản</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-600">Tên hiển thị</label>
+                        <p className="text-sm text-gray-900">{viewingUser.displayName}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-600">Email</label>
+                        <p className="text-sm text-gray-900">{viewingUser.email}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-600">Số điện thoại</label>
+                        <p className="text-sm text-gray-900">{viewingUser.phone || 'Chưa cập nhật'}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-600">Gói đăng ký</label>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          viewingUser.subscription === 'free' ? 'bg-gray-100 text-gray-800' :
+                          viewingUser.subscription === 'premium' ? 'bg-blue-100 text-blue-800' :
+                          'bg-purple-100 text-purple-800'
+                        }`}>
+                          {viewingUser.subscription === 'free' ? 'Miễn phí' :
+                           viewingUser.subscription === 'premium' ? 'Premium' : 'Pro'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Role & Status */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">Vai trò & Trạng thái</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-600">Vai trò</label>
+                        <div className="flex items-center gap-2 mt-1">
+                          {(() => {
+                            const roleInfo = getRoleInfo(viewingUser.role);
+                            const RoleIcon = roleInfo.icon;
+                            return (
+                              <>
+                                <RoleIcon className="w-4 h-4" />
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${roleInfo.color}`}>
+                                  {roleInfo.label}
+                                </span>
+                              </>
+                            );
+                          })()}
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-600">Trạng thái</label>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(viewingUser.status)}`}>
+                          {viewingUser.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}
+                        </span>
+                      </div>
+                      {viewingUser.role === 'student' && viewingUser.grade && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-600">Lớp</label>
+                          <p className="text-sm text-gray-900">{viewingUser.grade}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* User Code (for students) */}
+                  {viewingUser.role === 'student' && viewingUser.userCode && (
+                    <div className="bg-blue-50 rounded-lg p-4">
+                      <h3 className="text-lg font-medium text-blue-900 mb-4">Mã học sinh</h3>
+                      <div className="flex items-center gap-3">
+                        <span className="font-mono text-lg font-bold text-blue-600 bg-blue-100 px-3 py-2 rounded">
+                          {viewingUser.userCode}
+                        </span>
+                        <button
+                          onClick={() => handleCopyCode(viewingUser.userCode)}
+                          className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                        >
+                          <Copy className="w-4 h-4" />
+                          Sao chép
+                        </button>
+                      </div>
+                      <p className="text-sm text-blue-600 mt-2">
+                        Phụ huynh có thể sử dụng mã này để kết nối với học sinh
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Sidebar */}
+                <div className="space-y-6">
+                  {/* Avatar */}
+                  <div className="text-center">
+                    <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+                      <User className="w-12 h-12 text-gray-500" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900">{viewingUser.displayName}</h3>
+                    <p className="text-sm text-gray-600">{viewingUser.email}</p>
+                  </div>
+
+                  {/* Quick Actions */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">Thao tác nhanh</h3>
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => {
+                          handleCloseDetailModal();
+                          handleEditUser(viewingUser.id);
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition"
+                      >
+                        <Edit className="w-4 h-4" />
+                        Chỉnh sửa
+                      </button>
+                      <button
+                        onClick={() => handleToggleStatus(viewingUser.id)}
+                        className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition ${
+                          viewingUser.status === 'active' 
+                            ? 'text-red-600 bg-red-50 hover:bg-red-100' 
+                            : 'text-green-600 bg-green-50 hover:bg-green-100'
+                        }`}
+                      >
+                        {viewingUser.status === 'active' ? <XCircle className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
+                        {viewingUser.status === 'active' ? 'Vô hiệu hóa' : 'Kích hoạt'}
+                      </button>
+                      {viewingUser.role === 'student' && !viewingUser.userCode && (
+                        <button
+                          onClick={() => handleGenerateCode(viewingUser.id)}
+                          className="w-full flex items-center gap-2 px-3 py-2 text-purple-600 bg-purple-50 rounded-lg hover:bg-purple-100 transition"
+                        >
+                          <UserPlus className="w-4 h-4" />
+                          Tạo mã học sinh
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Timestamps */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">Thời gian</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-600">Ngày tạo</label>
+                        <p className="text-sm text-gray-900">
+                          {new Date(viewingUser.createdAt).toLocaleDateString('vi-VN')} {new Date(viewingUser.createdAt).toLocaleTimeString('vi-VN')}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-600">Đăng nhập cuối</label>
+                        <p className="text-sm text-gray-900">
+                          {new Date(viewingUser.lastLogin).toLocaleDateString('vi-VN')} {new Date(viewingUser.lastLogin).toLocaleTimeString('vi-VN')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
+                <button
+                  onClick={handleCloseDetailModal}
+                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
+                >
+                  Đóng
+                </button>
+                <button
+                  onClick={() => {
+                    handleCloseDetailModal();
+                    handleEditUser(viewingUser.id);
+                  }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                >
+                  Chỉnh sửa
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add/Edit User Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  {editingUser ? 'Chỉnh sửa người dùng' : 'Thêm người dùng mới'}
+                </h2>
+                <button
+                  onClick={handleCloseModal}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <XCircle className="w-6 h-6" />
+                </button>
+              </div>
+
+              <form onSubmit={handleFormSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Tên hiển thị *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.displayName}
+                      onChange={(e) => setFormData(prev => ({ ...prev, displayName: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Vai trò *
+                    </label>
+                    <select
+                      required
+                      value={formData.role}
+                      onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="student">Học sinh</option>
+                      <option value="teacher">Giáo viên</option>
+                      <option value="parent">Phụ huynh</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Số điện thoại
+                    </label>
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+
+                  {formData.role === 'student' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Lớp
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.grade}
+                        onChange={(e) => setFormData(prev => ({ ...prev, grade: e.target.value }))}
+                        placeholder="VD: Lớp 5A"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Gói đăng ký
+                    </label>
+                    <select
+                      value={formData.subscription}
+                      onChange={(e) => setFormData(prev => ({ ...prev, subscription: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="free">Miễn phí</option>
+                      <option value="premium">Premium</option>
+                      <option value="pro">Pro</option>
+                    </select>
+                  </div>
+                </div>
+
+                {formData.role === 'student' && editingUser?.userCode && (
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-blue-800">Mã học sinh:</span>
+                      <span className="font-mono text-sm font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded">
+                        {editingUser.userCode}
+                      </span>
+                    </div>
+                    <p className="text-xs text-blue-600 mt-1">
+                      Phụ huynh có thể sử dụng mã này để kết nối với học sinh
+                    </p>
+                  </div>
+                )}
+
+                <div className="flex justify-end gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={handleCloseModal}
+                    className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  >
+                    {editingUser ? 'Cập nhật' : 'Tạo người dùng'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

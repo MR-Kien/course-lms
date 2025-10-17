@@ -16,15 +16,24 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 
-const LessonViewer = ({ lesson, onComplete, onNext, onPrev, onExit, isCompleted = false }) => {
+const LessonViewer = ({ lesson, onComplete, onNext, onPrev, onExit, isCompleted = false, completedParts: initialCompletedParts = new Set() }) => {
   const [currentPartIndex, setCurrentPartIndex] = useState(0);
   const [expandedSections, setExpandedSections] = useState(new Set([0]));
   const [activeTab, setActiveTab] = useState('content'); // 'content' or 'attachments'
+  const [completedParts, setCompletedParts] = useState(initialCompletedParts); // Track completed parts
 
   const currentPart = lesson?.parts?.[currentPartIndex];
 
+  // Sync completed parts with parent when they change
+  useEffect(() => {
+    // Update local state when parent prop changes
+    if (initialCompletedParts.size !== completedParts.size) {
+      setCompletedParts(initialCompletedParts);
+    }
+  }, [completedParts, initialCompletedParts]);
+
   // Mark part as completed
-  const markPartCompleted = (partIndex) => {
+  const markPartCompleted = async (partIndex) => {
     // Nếu lesson đã hoàn thành, không cho phép mark lại
     if (isCompleted) {
       toast.info('Bài học đã hoàn thành!', {
@@ -34,19 +43,46 @@ const LessonViewer = ({ lesson, onComplete, onNext, onPrev, onExit, isCompleted 
       return;
     }
     
-    // Check if all parts are completed
-    const allPartsCompleted = lesson.parts.every((_, index) => index === partIndex);
-    
-    if (allPartsCompleted) {
-      toast.success('Hoàn thành bài học!', {
+    // Nếu phần này đã hoàn thành, không cho phép mark lại
+    if (completedParts.has(partIndex)) {
+      toast.info('Phần này đã hoàn thành!', {
         position: "top-right",
         autoClose: 2000,
       });
-      if (onComplete) {
-        onComplete();
-      }
-    } else {
+      return;
+    }
+    
+    try {
+      // Mark phần này là completed
+      setCompletedParts(prev => {
+        const newSet = new Set([...prev, partIndex]);
+        
+        // Check if all parts are completed with the new set
+        const allPartsCompleted = lesson.parts.every((_, index) => newSet.has(index));
+        
+        if (allPartsCompleted) {
+          // All parts completed, now complete the entire lesson
+          setTimeout(async () => {
+            if (onComplete) {
+              await onComplete();
+              toast.success('Chúc mừng! Bạn đã hoàn thành toàn bộ bài học!', {
+                position: "top-right",
+                autoClose: 3000,
+              });
+            }
+          }, 1000);
+        }
+        
+        return newSet;
+      });
+      
       toast.success('Hoàn thành phần này!', {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    } catch (error) {
+      console.error('Error completing part:', error);
+      toast.error('Có lỗi xảy ra khi hoàn thành phần này', {
         position: "top-right",
         autoClose: 2000,
       });
@@ -119,6 +155,22 @@ const LessonViewer = ({ lesson, onComplete, onNext, onPrev, onExit, isCompleted 
                 <span>{lesson.parts?.length || 0} phần</span>
               </div>
             </div>
+            
+            {/* Progress Indicator */}
+            <div className="mt-4">
+              <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                <span>Tiến độ hoàn thành</span>
+                <span className="text-green-600 font-medium">
+                  {completedParts.size}/{lesson.parts?.length || 0} phần
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${lesson.parts?.length ? (completedParts.size / lesson.parts.length) * 100 : 0}%` }}
+                ></div>
+              </div>
+            </div>
           </div>
 
           {/* Parts List */}
@@ -139,7 +191,7 @@ const LessonViewer = ({ lesson, onComplete, onNext, onPrev, onExit, isCompleted 
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      {isCompleted ? (
+                      {completedParts.has(index) ? (
                         <CheckCircle className="w-4 h-4 text-green-500" />
                       ) : (
                         <Circle className="w-4 h-4 text-gray-400" />
@@ -377,11 +429,11 @@ const LessonViewer = ({ lesson, onComplete, onNext, onPrev, onExit, isCompleted 
               {activeTab === 'content' && (
                 <button
                   onClick={() => markPartCompleted(currentPartIndex)}
-                  disabled={isCompleted}
+                  disabled={completedParts.has(currentPartIndex) || isCompleted}
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
                 >
                   <CheckCircle className="w-4 h-4" />
-                  {isCompleted ? 'Đã hoàn thành' : 'Hoàn thành phần này'}
+                  {completedParts.has(currentPartIndex) ? 'Đã hoàn thành phần này' : 'Hoàn thành phần này'}
                 </button>
               )}
             </div>

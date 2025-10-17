@@ -14,6 +14,7 @@ import RequiredPermission from "../components/RequiredPermission";
 import { ENDPOINTS } from "./endPoints";
 import LandingLayout from "../layouts/LandingLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
+import { useAuth } from "../hooks/useAuth";
 const WEB_NAME = "Learnly";
 
 const RequiredAuth = ({ children, path, requiredRoles = [] }) => {
@@ -293,13 +294,21 @@ const renderRoutes = (routes, isPrivate = false) => {
   });
 };
 
+// Auth wrapper component to initialize auth state
+const AuthWrapper = ({ children }) => {
+  useAuth(); // Initialize auth state
+  return children;
+};
+
 const AppRoutes = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        {renderRoutes(publicRoutesData)}
-        {renderRoutes(privateRouteData, true)}
-      </Routes>
+      <AuthWrapper>
+        <Routes>
+          {renderRoutes(publicRoutesData)}
+          {renderRoutes(privateRouteData, true)}
+        </Routes>
+      </AuthWrapper>
     </BrowserRouter>
   );
 };
