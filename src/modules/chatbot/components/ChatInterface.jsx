@@ -27,17 +27,20 @@ const ChatInterface = () => {
   const [newTitle, setNewTitle] = useState('');
   const messagesEndRef = useRef(null);
 
-  // Load chat sessions khi component mount
+  // Load chat sessions khi component mount (chỉ load existing chats)
   useEffect(() => {
     if (userData?.uid) {
       loadChatSessions();
     }
   }, [userData?.uid]);
 
-  // Load messages khi chuyển chat
+  // Load messages khi chuyển chat (chỉ khi có chatId)
   useEffect(() => {
     if (currentChatId) {
       loadMessages(currentChatId);
+    } else {
+      // Không có chat, để messages trống
+      setMessages([]);
     }
   }, [currentChatId]);
 
@@ -57,21 +60,27 @@ const ChatInterface = () => {
       const result = await aiService.getUserChatSessions(userData.uid);
       
       if (result.success) {
-        setChatSessions(result.sessions);
+        setChatSessions(result.sessions || []);
         
-        // Nếu chưa có chat nào, tạo chat mới
-        if (result.sessions.length === 0) {
-          await createNewChat();
-        } else {
-          // Chọn chat đầu tiên
+        // Nếu có chat, chọn chat đầu tiên
+        if (result.sessions && result.sessions.length > 0) {
           setCurrentChatId(result.sessions[0].id);
+        } else {
+          // Không có chat nào, để trống như ChatGPT
+          setCurrentChatId(null);
+          setMessages([]);
         }
       } else {
-        toast.error('Không thể tải danh sách chat');
+        console.error('Failed to load chat sessions:', result.error);
+        setChatSessions([]);
+        setCurrentChatId(null);
+        setMessages([]);
       }
     } catch (error) {
       console.error('Error loading chat sessions:', error);
-      toast.error('Có lỗi xảy ra khi tải chat');
+      setChatSessions([]);
+      setCurrentChatId(null);
+      setMessages([]);
     } finally {
       setIsLoadingSessions(false);
     }
@@ -79,17 +88,23 @@ const ChatInterface = () => {
 
   // Load tin nhắn của một chat
   const loadMessages = async (chatId) => {
+    if (!chatId) {
+      setMessages([]);
+      return;
+    }
+    
     try {
       const result = await aiService.getChatMessages(chatId);
       
       if (result.success) {
-        setMessages(result.messages);
+        setMessages(result.messages || []);
       } else {
-        toast.error('Không thể tải tin nhắn');
+        console.error('Failed to load messages:', result.error);
+        setMessages([]);
       }
     } catch (error) {
       console.error('Error loading messages:', error);
-      toast.error('Có lỗi xảy ra khi tải tin nhắn');
+      setMessages([]);
     }
   };
 
@@ -121,54 +136,6 @@ const ChatInterface = () => {
     }
   };
 
-  // Gửi tin nhắn
-  const sendMessage = async () => {
-    if (!inputMessage.trim() || !currentChatId) return;
-
-    const userMessage = inputMessage.trim();
-    setInputMessage('');
-    setIsLoading(true);
-
-    try {
-      // Thêm tin nhắn user vào UI ngay lập tức
-      const tempUserMessage = {
-        id: `temp-${Date.now()}`,
-        role: 'user',
-        content: userMessage,
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, tempUserMessage]);
-
-      // Gọi AI service
-      const result = await aiService.sendMessage(currentChatId, userMessage, messages);
-      
-      if (result.success) {
-        // Thêm tin nhắn AI vào UI
-        const aiMessage = {
-          id: `ai-${Date.now()}`,
-          role: 'assistant',
-          content: result.content,
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, aiMessage]);
-
-        // Reload messages để có data chính xác từ database
-        await loadMessages(currentChatId);
-        
-        // Reload chat sessions để cập nhật messageCount
-        await loadChatSessions();
-      } else {
-        // Xóa tin nhắn user nếu gửi thất bại
-        setMessages(prev => prev.filter(msg => msg.id !== tempUserMessage.id));
-        toast.error('Không thể gửi tin nhắn: ' + result.error);
-      }
-    } catch (error) {
-      console.error('Error sending message:', error);
-      toast.error('Có lỗi xảy ra khi gửi tin nhắn');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   // Xóa chat session
   const deleteChat = async (chatId) => {
@@ -242,12 +209,12 @@ const ChatInterface = () => {
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      createNewChatAndSendMessage();
+      sendMessage();
     }
   };
 
-  // Tạo chat mới và gửi tin nhắn đầu tiên
-  const createNewChatAndSendMessage = async () => {
+  // Gửi tin nhắn (tạo chat mới nếu chưa có)
+  const sendMessage = async () => {
     if (!inputMessage.trim()) return;
 
     const userMessage = inputMessage.trim();
@@ -255,61 +222,71 @@ const ChatInterface = () => {
     setIsLoading(true);
 
     try {
-      // Tạo chat session mới
-      const chatResult = await aiService.createChatSession(userData.uid, userMessage.substring(0, 50) + '...');
+      let chatId = currentChatId;
       
-      if (chatResult.success) {
-        const newChat = {
-          id: chatResult.id,
-          title: userMessage.substring(0, 50) + '...',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          messageCount: 0
-        };
+      // Nếu chưa có chat, tạo chat mới
+      if (!chatId) {
+        console.log('Creating new chat with message:', userMessage);
+        const chatResult = await aiService.createChatSession(userData.uid, userMessage.substring(0, 50) + '...');
         
-        // Thêm chat mới vào danh sách và chọn nó
-        setChatSessions(prev => [newChat, ...prev]);
-        setCurrentChatId(chatResult.id);
-        setMessages([]);
+        if (chatResult.success) {
+          chatId = chatResult.id;
+          const newChat = {
+            id: chatId,
+            title: userMessage.substring(0, 50) + '...',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            messageCount: 0
+          };
+          
+          // Thêm chat mới vào danh sách và chọn nó
+          setChatSessions(prev => [newChat, ...prev]);
+          setCurrentChatId(chatId);
+        } else {
+          toast.error('Không thể tạo chat mới: ' + (chatResult.error || 'Unknown error'));
+          return;
+        }
+      }
 
-        // Thêm tin nhắn user vào UI ngay lập tức
-        const tempUserMessage = {
-          id: `temp-${Date.now()}`,
-          role: 'user',
-          content: userMessage,
+      // Thêm tin nhắn user vào UI
+      const tempUserMessage = {
+        id: `temp-${Date.now()}`,
+        role: 'user',
+        content: userMessage,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, tempUserMessage]);
+
+      console.log('Sending message to AI...');
+      // Gọi AI service để gửi tin nhắn
+      const result = await aiService.sendMessage(chatId, userMessage, messages);
+      
+      console.log('AI response result:', result);
+      
+      if (result.success) {
+        // Thêm tin nhắn AI vào UI
+        const aiMessage = {
+          id: `ai-${Date.now()}`,
+          role: 'assistant',
+          content: result.content,
           timestamp: new Date()
         };
-        setMessages([tempUserMessage]);
+        setMessages(prev => [...prev, aiMessage]);
 
-        // Gọi AI service để gửi tin nhắn đầu tiên
-        const result = await aiService.sendMessage(chatResult.id, userMessage, []);
-        
-        if (result.success) {
-          // Thêm tin nhắn AI vào UI
-          const aiMessage = {
-            id: `ai-${Date.now()}`,
-            role: 'assistant',
-            content: result.content,
-            timestamp: new Date()
-          };
-          setMessages(prev => [...prev, aiMessage]);
-
-          // Reload messages để có data chính xác từ database
-          await loadMessages(chatResult.id);
-          
-          // Reload chat sessions để cập nhật messageCount
-          await loadChatSessions();
-        } else {
-          // Xóa tin nhắn user nếu gửi thất bại
-          setMessages([]);
-          toast.error('Không thể gửi tin nhắn: ' + result.error);
-        }
+        // Cập nhật chat session trong state với messageCount mới
+        setChatSessions(prev => prev.map(chat => 
+          chat.id === chatId 
+            ? { ...chat, messageCount: messages.length + 2, updatedAt: new Date() }
+            : chat
+        ));
       } else {
-        toast.error('Không thể tạo chat mới');
+        // Xóa tin nhắn user nếu gửi thất bại
+        setMessages(prev => prev.filter(msg => msg.id !== tempUserMessage.id));
+        toast.error('Không thể gửi tin nhắn: ' + result.error);
       }
     } catch (error) {
-      console.error('Error creating new chat and sending message:', error);
-      toast.error('Có lỗi xảy ra khi tạo chat mới');
+      console.error('Error sending message:', error);
+      toast.error('Có lỗi xảy ra khi gửi tin nhắn: ' + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -423,7 +400,10 @@ const ChatInterface = () => {
         {/* Chat Header */}
         <div className="bg-white border-b border-gray-200 p-4">
           <h2 className="text-lg font-semibold text-gray-900">
-            {chatSessions.find(chat => chat.id === currentChatId)?.title || 'Chat'}
+            {currentChatId 
+              ? chatSessions.find(chat => chat.id === currentChatId)?.title || 'Chat'
+              : 'Novastep AI'
+            }
           </h2>
         </div>
 
@@ -439,7 +419,7 @@ const ChatInterface = () => {
                 Tôi sẽ giúp bạn học tập bằng phương pháp Socrates. 
               </p>
               <p className="text-sm text-gray-500">
-                Nhập câu hỏi và nhấn <kbd className="px-2 py-1 bg-gray-100 rounded text-xs">Enter</kbd> để bắt đầu cuộc trò chuyện mới!
+                Nhập câu hỏi và nhấn <kbd className="px-2 py-1 bg-gray-100 rounded text-xs">Enter</kbd> để bắt đầu trò chuyện!
               </p>
             </div>
           ) : (
@@ -504,16 +484,16 @@ const ChatInterface = () => {
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Nhập câu hỏi và nhấn Enter để tạo chat mới..."
+              placeholder="Nhập câu hỏi và nhấn Enter để gửi..."
               className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
               rows={1}
               disabled={isLoading}
             />
             <button
-              onClick={createNewChatAndSendMessage}
+              onClick={sendMessage}
               disabled={!inputMessage.trim() || isLoading}
               className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              title="Tạo chat mới"
+              title="Gửi tin nhắn"
             >
               <Send className="w-5 h-5" />
             </button>
