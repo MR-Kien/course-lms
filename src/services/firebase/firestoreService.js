@@ -51,6 +51,7 @@ export const COLLECTIONS = {
   CERTIFICATES: 'certificates',
   LESSON_COMPLETIONS: 'lesson_completions',
   EXAM_RESULTS: 'exam_results',
+  PART_COMPLETIONS: 'part_completions',
   CHAT_SESSIONS: 'chat_sessions',
   CHAT_MESSAGES: 'chat_messages'
 };

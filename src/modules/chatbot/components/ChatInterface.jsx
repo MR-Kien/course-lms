@@ -9,14 +9,18 @@ import {
   Bot, 
   User,
   MessageSquare,
-  MoreVertical
+  MoreVertical,
+  ArrowLeft
 } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import aiService from '../../../services/firebase/aiService';
 import { useAuth } from '../../../hooks/useAuth';
+import { ENDPOINTS } from '../../../routes/endPoints';
 
 const ChatInterface = () => {
   const { userData } = useAuth();
+  const navigate = useNavigate();
   const [chatSessions, setChatSessions] = useState([]);
   const [currentChatId, setCurrentChatId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -399,12 +403,25 @@ const ChatInterface = () => {
       <div className="flex-1 flex flex-col">
         {/* Chat Header */}
         <div className="bg-white border-b border-gray-200 p-4">
-          <h2 className="text-lg font-semibold text-gray-900">
-            {currentChatId 
-              ? chatSessions.find(chat => chat.id === currentChatId)?.title || 'Chat'
-              : 'Novastep AI'
-            }
-          </h2>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => navigate(ENDPOINTS.STUDENT.DASHBOARD)}
+                className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                title="Quay về Dashboard"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span className="text-sm font-medium">Dashboard</span>
+              </button>
+              <div className="h-6 w-px bg-gray-300"></div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                {currentChatId 
+                  ? chatSessions.find(chat => chat.id === currentChatId)?.title || 'Chat'
+                  : 'Novastep AI'
+                }
+              </h2>
+            </div>
+          </div>
         </div>
 
         {/* Messages Area */}

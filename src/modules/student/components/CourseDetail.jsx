@@ -255,6 +255,7 @@ const CourseDetail = () => {
     return (
       <LessonViewer
         lesson={course.lessons[currentLessonIndex]}
+        courseId={courseId}
         onComplete={() => handleLessonComplete(course.lessons[currentLessonIndex].id)}
         onNext={() => {
           if (currentLessonIndex < course.lessons.length - 1) {

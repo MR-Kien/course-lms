@@ -78,6 +78,7 @@ class AIService {
   constructor() {
     this.geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY;
     this.modelConfig = AI_MODEL;
+    this.firestore = firestoreService;
     
     console.log('AI Service initialized with model:', this.modelConfig.name);
     
@@ -268,24 +269,110 @@ class AIService {
 
   // Lấy danh sách chat sessions của user
   async getUserChatSessions(userId) {
-    // Trả về empty array ngay lập tức để tránh lỗi precondition
-    console.log('Getting chat sessions for user:', userId);
-    console.log('Collections not created yet, returning empty array');
-    return {
-      success: true,
-      sessions: []
-    };
+    try {
+      console.log('Getting chat sessions for user:', userId);
+      
+      // Sử dụng method đơn giản hơn
+      const result = await this.firestore.getCollection('chat_sessions');
+      console.log('getCollection result:', result);
+      
+      // Handle different return formats
+      let chatSessions = [];
+      if (Array.isArray(result)) {
+        // Direct array return
+        chatSessions = result;
+      } else if (result && result.success && Array.isArray(result.data)) {
+        // Object with success and data properties
+        chatSessions = result.data;
+      } else if (result && Array.isArray(result)) {
+        // Object with array property
+        chatSessions = result;
+      }
+      
+      if (Array.isArray(chatSessions)) {
+        // Filter manually
+        const userSessions = chatSessions.filter(session => session.userId === userId);
+        // Sort by updatedAt desc
+        userSessions.sort((a, b) => {
+          const aTime = a.updatedAt?.seconds || a.updatedAt || 0;
+          const bTime = b.updatedAt?.seconds || b.updatedAt || 0;
+          return bTime - aTime;
+        });
+        
+        return {
+          success: true,
+          sessions: userSessions
+        };
+      } else {
+        console.error('Error getting chat sessions - not an array:', result);
+        return {
+          success: false,
+          error: 'Invalid data format',
+          sessions: []
+        };
+      }
+    } catch (error) {
+      console.error('Error getting user chat sessions:', error);
+      return {
+        success: false,
+        error: error.message,
+        sessions: []
+      };
+    }
   }
 
   // Lấy tin nhắn của một chat session
   async getChatMessages(chatId) {
-    // Trả về empty array ngay lập tức để tránh lỗi precondition
-    console.log('Getting messages for chat:', chatId);
-    console.log('Collections not created yet, returning empty array');
-    return {
-      success: true,
-      messages: []
-    };
+    try {
+      console.log('Getting messages for chat:', chatId);
+      
+      // Sử dụng method đơn giản hơn
+      const result = await this.firestore.getCollection('chat_messages');
+      console.log('getCollection result for messages:', result);
+      
+      // Handle different return formats
+      let chatMessages = [];
+      if (Array.isArray(result)) {
+        // Direct array return
+        chatMessages = result;
+      } else if (result && result.success && Array.isArray(result.data)) {
+        // Object with success and data properties
+        chatMessages = result.data;
+      } else if (result && Array.isArray(result)) {
+        // Object with array property
+        chatMessages = result;
+      }
+      
+      if (Array.isArray(chatMessages)) {
+        // Filter manually
+        const filteredMessages = chatMessages.filter(message => message.chatId === chatId);
+        // Sort by timestamp asc
+        filteredMessages.sort((a, b) => {
+          const aTime = a.timestamp || 0;
+          const bTime = b.timestamp || 0;
+          return aTime - bTime;
+        });
+        
+        return {
+          success: true,
+          messages: filteredMessages
+        };
+      } else {
+        console.error('Error getting chat messages - not an array:', result);
+        return {
+          success: false,
+          error: 'Invalid data format',
+          messages: []
+        };
+      }
+    } catch (error) {
+      console.error('Error getting chat messages:', error);
+      return {
+        success: false,
+        error: error.message,
+        messages: []
+      };
+    }
   }
 
   // Xóa chat session

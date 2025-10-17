@@ -15,8 +15,11 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
+import courseService from '../../../services/firebase/courseService';
 
-const LessonViewer = ({ lesson, onComplete, onNext, onPrev, onExit, isCompleted = false, completedParts: initialCompletedParts = new Set() }) => {
+const LessonViewer = ({ lesson, courseId, onComplete, onNext, onPrev, onExit, isCompleted = false, completedParts: initialCompletedParts = new Set() }) => {
+  const { user } = useSelector(state => state.auth);
   const [currentPartIndex, setCurrentPartIndex] = useState(0);
   const [expandedSections, setExpandedSections] = useState(new Set([0]));
   const [activeTab, setActiveTab] = useState('content'); // 'content' or 'attachments'
@@ -53,6 +56,15 @@ const LessonViewer = ({ lesson, onComplete, onNext, onPrev, onExit, isCompleted 
     }
     
     try {
+      // Save part completion to database
+      if (user?.uid && courseId && lesson?.id) {
+        const result = await courseService.updatePartCompletion(user.uid, courseId, lesson.id, partIndex);
+        if (!result.success) {
+          console.error('Failed to save part completion:', result.error);
+          // Continue with UI update even if database save fails
+        }
+      }
+      
       // Mark phần này là completed
       setCompletedParts(prev => {
         const newSet = new Set([...prev, partIndex]);

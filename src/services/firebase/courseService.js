@@ -1022,55 +1022,39 @@ class CourseService {
     }
   }
 
+  // Update individual part completion
+  async updatePartCompletion(studentId, courseId, lessonId, partIndex) {
+    try {
+      const partCompletionId = `${studentId}_${courseId}_${lessonId}_part_${partIndex}`;
+      const partCompletion = {
+        id: partCompletionId,
+        studentId,
+        courseId,
+        lessonId,
+        partIndex,
+        completedAt: new Date().toISOString(),
+        timestamp: Date.now()
+      };
+      
+      await this.firestore.createDocument('part_completions', partCompletion, partCompletionId);
+      
+      return {
+        success: true,
+        message: 'Part completion saved successfully'
+      };
+    } catch (error) {
+      console.error('Error updating part completion:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
   // Get completed parts for a specific lesson
   async getCompletedParts(studentId, courseId, lessonId) {
     try {
-      const lessonCompletionsResult = await this.firestore.getCollection('lesson_completions');
-      let lessonCompletions = [];
-      
-      if (Array.isArray(lessonCompletionsResult)) {
-        lessonCompletions = lessonCompletionsResult;
-      } else if (lessonCompletionsResult?.success && Array.isArray(lessonCompletionsResult.data)) {
-        lessonCompletions = lessonCompletionsResult.data;
-      }
-
-      // Filter completions for this specific lesson
-      const lessonSpecificCompletions = lessonCompletions.filter(completion => 
-        completion.studentId === studentId && 
-        completion.courseId === courseId && 
-        completion.lessonId === lessonId
-      );
-
-      // Get course to access lesson parts
-      const courseResult = await this.firestore.getDocument('courses', courseId);
-      
-      // Check if courseResult has success property or is direct data
-      let course;
-      if (courseResult && typeof courseResult === 'object') {
-        if (courseResult.success !== undefined) {
-          // Has success property
-          if (!courseResult.success) {
-            return { success: false, completedParts: new Set() };
-          }
-          course = courseResult.data;
-        } else {
-          // Direct data
-          course = courseResult;
-        }
-      } else {
-        return { success: false, completedParts: new Set() };
-      }
-
-      const lesson = course.lessons?.find(l => l.id === lessonId);
-      if (!lesson || !lesson.parts) {
-        return { success: false, completedParts: new Set() };
-      }
-
-      // For now, if lesson is completed, mark all parts as completed
-      // In the future, we can track individual part completions
-      const completedParts = new Set();
-      
-      // Check if lesson is completed
+      // First check if lesson is fully completed
       const enrollmentResult = await this.firestore.getCollection('enrollments');
       let enrollments = [];
       
@@ -1085,11 +1069,62 @@ class CourseService {
       );
 
       if (studentEnrollment && studentEnrollment.completedLessons?.includes(lessonId)) {
-        // Lesson is completed, mark all parts as completed
+        // Lesson is completed, get course to know how many parts there are
+        const courseResult = await this.firestore.getDocument('courses', courseId);
+        let course;
+        if (courseResult && typeof courseResult === 'object') {
+          if (courseResult.success !== undefined) {
+            if (!courseResult.success) {
+              return { success: false, completedParts: new Set() };
+            }
+            course = courseResult.data;
+          } else {
+            course = courseResult;
+          }
+        } else {
+          return { success: false, completedParts: new Set() };
+        }
+
+        const lesson = course.lessons?.find(l => l.id === lessonId);
+        if (!lesson || !lesson.parts) {
+          return { success: false, completedParts: new Set() };
+        }
+
+        // Mark all parts as completed
+        const completedParts = new Set();
         lesson.parts.forEach((_, index) => {
           completedParts.add(index);
         });
+
+        return {
+          success: true,
+          completedParts: completedParts
+        };
       }
+
+      // Lesson not completed, check individual part completions
+      const partCompletionsResult = await this.firestore.getCollection('part_completions');
+      let partCompletions = [];
+      
+      if (Array.isArray(partCompletionsResult)) {
+        partCompletions = partCompletionsResult;
+      } else if (partCompletionsResult?.success && Array.isArray(partCompletionsResult.data)) {
+        partCompletions = partCompletionsResult.data;
+      }
+
+      // Filter completions for this specific lesson
+      const lessonSpecificPartCompletions = partCompletions.filter(completion => 
+        completion.studentId === studentId && 
+        completion.courseId === courseId && 
+        completion.lessonId === lessonId
+      );
+
+      const completedParts = new Set();
+      lessonSpecificPartCompletions.forEach(completion => {
+        if (typeof completion.partIndex === 'number') {
+          completedParts.add(completion.partIndex);
+        }
+      });
 
       return {
         success: true,

@@ -345,7 +345,7 @@ class ParentService {
           monthlyProgress,
           courseProgress,
           achievements: [
-            { type: 'streak', title: 'Chuỗi học tập', value: `${this.calculateLearningStreak(enrollments)} ngày`, icon: '🔥' },
+            { type: 'streak', title: 'Chuỗi học tập', value: `${await this.calculateLearningStreak(studentId)} ngày`, icon: '🔥' },
             { type: 'time', title: 'Thời gian học', value: `${Math.round(totalStudyTime / 60)} giờ`, icon: '⏰' },
             { type: 'lessons', title: 'Bài học hoàn thành', value: `${completedLessons} bài`, icon: '📚' },
             { type: 'score', title: 'Điểm trung bình', value: `${averageProgress}/100`, icon: '⭐' }
@@ -485,18 +485,85 @@ class ParentService {
     return monthlyData;
   }
 
-  // Calculate learning streak from actual enrollment data
-  calculateLearningStreak(enrollments) {
-    // For now, calculate based on total completed lessons
-    // In a real system, this would track daily activity logs
-    const totalCompletedLessons = enrollments.reduce((sum, e) => {
-      return sum + (Array.isArray(e.completedLessons) ? e.completedLessons.length : 0);
-    }, 0);
-    
-    // Estimate streak based on completed lessons (1 lesson = 1 day of activity)
-    const estimatedStreak = Math.min(7, Math.max(1, Math.floor(totalCompletedLessons / 2)));
-    
-    return estimatedStreak;
+  // Calculate learning streak from actual lesson completion data
+  async calculateLearningStreak(studentId) {
+    try {
+      // Get lesson completions with real timestamps
+      const lessonCompletionsResult = await this.firestore.getCollection('lesson_completions');
+      let lessonCompletions = [];
+      
+      if (Array.isArray(lessonCompletionsResult)) {
+        lessonCompletions = lessonCompletionsResult;
+      } else if (lessonCompletionsResult?.success && Array.isArray(lessonCompletionsResult.data)) {
+        lessonCompletions = lessonCompletionsResult.data;
+      }
+
+      // Filter completions for this specific student
+      const studentCompletions = lessonCompletions.filter(completion => 
+        completion.studentId === studentId
+      );
+
+      if (studentCompletions.length === 0) {
+        return 0;
+      }
+
+      // Group completions by date
+      const completionsByDate = {};
+      studentCompletions.forEach(completion => {
+        const date = new Date(completion.completedAt || completion.timestamp);
+        const dateKey = date.toISOString().split('T')[0]; // YYYY-MM-DD
+        completionsByDate[dateKey] = true;
+      });
+
+      // Get sorted dates
+      const sortedDates = Object.keys(completionsByDate).sort();
+      
+      if (sortedDates.length === 0) {
+        return 0;
+      }
+
+      // Calculate current streak
+      let currentStreak = 0;
+      const today = new Date();
+      const todayKey = today.toISOString().split('T')[0];
+      
+      // Check if student studied today or yesterday
+      let checkDate = new Date(today);
+      let foundRecentActivity = false;
+      
+      // Look back up to 2 days to find recent activity
+      for (let i = 0; i < 2; i++) {
+        const checkDateKey = checkDate.toISOString().split('T')[0];
+        if (completionsByDate[checkDateKey]) {
+          foundRecentActivity = true;
+          break;
+        }
+        checkDate.setDate(checkDate.getDate() - 1);
+      }
+      
+      if (!foundRecentActivity) {
+        return 0; // No recent activity, streak is broken
+      }
+
+      // Calculate streak backwards from most recent activity
+      const mostRecentDate = new Date(sortedDates[sortedDates.length - 1]);
+      let streakDate = new Date(mostRecentDate);
+      
+      while (true) {
+        const streakDateKey = streakDate.toISOString().split('T')[0];
+        if (completionsByDate[streakDateKey]) {
+          currentStreak++;
+          streakDate.setDate(streakDate.getDate() - 1);
+        } else {
+          break;
+        }
+      }
+
+      return Math.min(7, currentStreak); // Cap at 7 days for UI
+    } catch (error) {
+      console.error('Error calculating learning streak:', error);
+      return 0;
+    }
   }
 
   // Get child's recent activities from actual data with real timestamps
