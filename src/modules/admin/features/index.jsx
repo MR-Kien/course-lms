@@ -25,6 +25,7 @@ import {
 import { useAuth } from "../../../hooks/useAuth";
 import { USER_ROLES, legacyAuthService as AuthService } from "../../../services/firebase";
 import adminAnalyticsService from "../../../services/firebase/adminAnalyticsService";
+import { toast } from "react-toastify";
 import CourseManagement from "../components/CourseManagement";
 import AdminReports from "../components/AdminReports";
 import AdminUserManagement from "../components/AdminUserManagement";
@@ -145,11 +146,16 @@ const AdminDashboard = () => {
         fetchStats()
       ]);
       
-      // Show success message (you can add toast notification here)
-      console.log('Payment approved successfully');
+      toast.success('Đã duyệt thanh toán và nâng cấp tài khoản thành công!', {
+        position: "top-right",
+        autoClose: 3000,
+      });
     } catch (error) {
       console.error('Error approving payment:', error);
-      // Show error message (you can add toast notification here)
+      toast.error('Có lỗi xảy ra khi duyệt thanh toán!', {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   }, [userData?.uid, fetchPayments, paymentTab, fetchStats]);
 
@@ -164,11 +170,16 @@ const AdminDashboard = () => {
         fetchStats()
       ]);
       
-      // Show success message (you can add toast notification here)
-      console.log('Payment rejected successfully');
+      toast.success('Đã từ chối thanh toán!', {
+        position: "top-right",
+        autoClose: 3000,
+      });
     } catch (error) {
       console.error('Error rejecting payment:', error);
-      // Show error message (you can add toast notification here)
+      toast.error('Có lỗi xảy ra khi từ chối thanh toán!', {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   }, [userData?.uid, fetchPayments, paymentTab, fetchStats]);
 
@@ -233,7 +244,10 @@ const AdminDashboard = () => {
       setSelectedPayments([]);
       setIsSelectAll(false);
       
-      console.log(`Approved ${selectedPayments.length} payments successfully`);
+      toast.success(`Đã duyệt ${selectedPayments.length} thanh toán và nâng cấp tài khoản thành công!`, {
+        position: "top-right",
+        autoClose: 3000,
+      });
     } catch (error) {
       console.error('Error bulk approving payments:', error);
     }
@@ -261,7 +275,10 @@ const AdminDashboard = () => {
       setSelectedPayments([]);
       setIsSelectAll(false);
       
-      console.log(`Rejected ${selectedPayments.length} payments successfully`);
+      toast.success(`Đã từ chối ${selectedPayments.length} thanh toán!`, {
+        position: "top-right",
+        autoClose: 3000,
+      });
     } catch (error) {
       console.error('Error bulk rejecting payments:', error);
     }

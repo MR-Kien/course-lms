@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../hooks/useAuth";
 import { ENDPOINTS } from "../../../../routes/endPoints";
+import { SUBSCRIPTION_PLANS, formatPrice } from "../../../../constants/pricingConstants";
 
 export default function Pricing() {
   const [billing, setBilling] = useState("monthly"); // monthly | yearly
@@ -43,7 +44,7 @@ export default function Pricing() {
       },
       premium: {
         name: "Gói Premium",
-        price: "69.000 VND/tháng",
+        price: SUBSCRIPTION_PLANS.MONTHLY.displayPrice,
         desc: "Lựa chọn phổ biến nhất",
         features: [
           "Tất cả tính năng gói Miễn phí",
@@ -72,8 +73,8 @@ export default function Pricing() {
       },
       premium: {
         name: "Gói Premium",
-        price: "690.000 VND/năm",
-        desc: "Tiết kiệm 17%",
+        price: SUBSCRIPTION_PLANS.YEARLY.displayPrice,
+        desc: `Tiết kiệm ${SUBSCRIPTION_PLANS.YEARLY.savingsPercentage}%`,
         features: [
           "Tất cả tính năng gói Miễn phí",
           "Truy cập AI nâng cao không giới hạn",
@@ -123,7 +124,7 @@ export default function Pricing() {
             Hàng năm
             {billing === "yearly" && (
               <span className="absolute -top-5 left-1/2 -translate-x-1/2 bg-green-100 text-green-600 text-xs font-medium px-2 py-0.5 rounded-full">
-                Tiết kiệm 17%
+                Tiết kiệm {SUBSCRIPTION_PLANS.YEARLY.savingsPercentage}%
               </span>
             )}
           </button>

@@ -7,6 +7,7 @@ import { useAuth } from "../../../hooks/useAuth";
 import { SUBSCRIPTION_TYPES } from "../../../services/firebase";
 import { legacyAuthService as authService } from "../../../services/firebase";
 import { uploadImageToCloudinary } from "../../../configs/cloudinary.config";
+import { SUBSCRIPTION_PLANS, formatPrice } from "../../../constants/pricingConstants";
 
 const PaymentUpgrade = () => {
   const navigate = useNavigate();
@@ -21,19 +22,8 @@ const PaymentUpgrade = () => {
   const qrCodeImage = "https://via.placeholder.com/200x200/2563EB/FFFFFF?text=QR+CODE";
 
   const plans = {
-    monthly: {
-      name: "Hàng tháng",
-      price: 59000,
-      period: "tháng",
-      originalPrice: 59000
-    },
-    yearly: {
-      name: "Hàng năm", 
-      price: 599000,
-      period: "năm",
-      originalPrice: 599000,
-      savings: 109000
-    }
+    monthly: SUBSCRIPTION_PLANS.MONTHLY,
+    yearly: SUBSCRIPTION_PLANS.YEARLY
   };
 
   const currentPlan = plans[selectedPlan];
@@ -195,8 +185,8 @@ const PaymentUpgrade = () => {
                 >
                   <div className="flex justify-between items-center">
                     <div>
-                      <div className="font-semibold text-gray-900">Hàng tháng</div>
-                      <div className="text-sm text-gray-600">59.000đ/tháng</div>
+                      <div className="font-semibold text-gray-900">{plans.monthly.name}</div>
+                      <div className="text-sm text-gray-600">{plans.monthly.displayPrice}</div>
                     </div>
                     {selectedPlan === "monthly" && (
                       <Check className="w-5 h-5 text-blue-500" />
@@ -214,9 +204,9 @@ const PaymentUpgrade = () => {
                 >
                   <div className="flex justify-between items-center">
                     <div>
-                      <div className="font-semibold text-gray-900">Hàng năm</div>
-                      <div className="text-sm text-gray-600">599.000đ/năm</div>
-                      <div className="text-xs text-green-600">Tiết kiệm 109.000₫</div>
+                      <div className="font-semibold text-gray-900">{plans.yearly.name}</div>
+                      <div className="text-sm text-gray-600">{plans.yearly.displayPrice}</div>
+                      <div className="text-xs text-green-600">Tiết kiệm {plans.yearly.savings.toLocaleString('vi-VN')}₫</div>
                     </div>
                     {selectedPlan === "yearly" && (
                       <Check className="w-5 h-5 text-blue-500" />
@@ -231,12 +221,12 @@ const PaymentUpgrade = () => {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Giá gốc:</span>
-                <span className="text-gray-900">{currentPlan.price.toLocaleString('vi-VN')} VNĐ</span>
+                <span className="text-gray-900">{formatPrice(currentPlan.originalPrice)}</span>
               </div>
               <div className="border-t pt-2">
                 <div className="flex justify-between text-lg font-semibold text-blue-600">
                   <span>Tổng cộng:</span>
-                  <span>{currentPlan.price.toLocaleString('vi-VN')} VNĐ</span>
+                  <span>{formatPrice(currentPlan.price)}</span>
                 </div>
               </div>
             </div>

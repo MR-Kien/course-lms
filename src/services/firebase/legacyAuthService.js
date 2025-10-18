@@ -453,12 +453,32 @@ class LegacyAuthService {
   // Phê duyệt transaction
   async approveTransaction(transactionId, adminId) {
     try {
+      // First, get the transaction details
+      const transactionDoc = await this.firestore.getDocument('transactions', transactionId);
+      if (!transactionDoc.success) {
+        throw new Error('Transaction not found');
+      }
+
+      const transaction = transactionDoc.data;
+      const userId = transaction.userId;
+      const planType = transaction.planType;
+
+      // Update transaction status
       await this.firestore.updateDocument('transactions', transactionId, {
         status: 'approved',
         approvedBy: adminId,
         approvedAt: new Date(),
         updatedAt: new Date()
       });
+
+      // Update user subscription
+      if (userId && planType) {
+        await this.firestore.updateDocument('users', userId, {
+          subscriptionType: planType,
+          subscriptionUpdatedAt: new Date(),
+          updatedAt: new Date()
+        });
+      }
 
       return { success: true };
     } catch (error) {
