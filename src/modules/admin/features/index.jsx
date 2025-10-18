@@ -28,7 +28,6 @@ import adminAnalyticsService from "../../../services/firebase/adminAnalyticsServ
 import CourseManagement from "../components/CourseManagement";
 import AdminReports from "../components/AdminReports";
 import AdminUserManagement from "../components/AdminUserManagement";
-import AdminSystemSettings from "../components/AdminSystemSettings";
 import AdminNotifications from "../components/AdminNotifications";
 
 const AdminDashboard = () => {
@@ -504,7 +503,6 @@ const AdminDashboard = () => {
               { id: "courses", label: "Khóa học", icon: BookOpen },
               { id: "payments", label: "Thanh toán", icon: CreditCard },
               { id: "users", label: "Người dùng", icon: Users },
-              { id: "settings", label: "Cài đặt", icon: Settings },
               { id: "notifications", label: "Thông báo", icon: Bell }
             ].map((tab) => (
               <button
@@ -961,9 +959,6 @@ const AdminDashboard = () => {
           <AdminUserManagement onBack={handleBackToDashboard} />
         )}
 
-        {activeTab === "settings" && (
-          <AdminSystemSettings onBack={handleBackToDashboard} />
-        )}
 
         {activeTab === "notifications" && (
           <AdminNotifications onBack={handleBackToDashboard} />
