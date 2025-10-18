@@ -29,6 +29,9 @@ const SignIn = () => {
   const [fieldErrors, setFieldErrors] = useState({});
   const [submitClickCount, setSubmitClickCount] = useState(0);
   const [showAdminOption, setShowAdminOption] = useState(false);
+  
+  // Debug log for state changes
+  console.log('SignIn render - submitClickCount:', submitClickCount, 'showAdminOption:', showAdminOption);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -93,15 +96,36 @@ const SignIn = () => {
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    // Increment click count
+  // Handle header click for admin unlock
+  const handleHeaderClick = () => {
     const newClickCount = submitClickCount + 1;
     setSubmitClickCount(newClickCount);
     
+    console.log('Header clicked, count:', newClickCount);
+    
     // Show admin option after 10 clicks
     if (newClickCount >= 10 && !showAdminOption) {
+      console.log('Unlocking admin option!');
+      setShowAdminOption(true);
+      toast.info("🎉 Chúc mừng! Bạn đã mở khóa tùy chọn đăng ký Admin! Bây giờ bạn có thể chọn vai trò Admin trong dropdown.", {
+        position: "top-right",
+        autoClose: 8000,
+      });
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Increment click count FIRST (before validation)
+    const newClickCount = submitClickCount + 1;
+    setSubmitClickCount(newClickCount);
+    
+    console.log('Submit clicked, count:', newClickCount);
+    
+    // Show admin option after 10 clicks
+    if (newClickCount >= 10 && !showAdminOption) {
+      console.log('Unlocking admin option!');
       setShowAdminOption(true);
       toast.info("🎉 Chúc mừng! Bạn đã mở khóa tùy chọn đăng ký Admin! Bây giờ bạn có thể chọn vai trò Admin trong dropdown.", {
         position: "top-right",
@@ -110,6 +134,7 @@ const SignIn = () => {
     }
     
     if (!validateForm()) {
+      console.log('Form validation failed, but click counted');
       return;
     }
 
@@ -202,7 +227,11 @@ const SignIn = () => {
             <Link to={ENDPOINTS.INDEX}>
               <GraduationCapIcon className="text-blue-600 text-4xl w-[50px] h-[50px]" />
             </Link>
-            <h1 className="text-2xl font-bold text-blue-600 text-center">
+            <h1 
+              onClick={handleHeaderClick}
+              className="text-2xl font-bold text-blue-600 text-center cursor-pointer hover:text-blue-700 transition-colors"
+              title="Click để mở khóa Admin (10 lần)"
+            >
               Đăng ký tài khoản Learnly
             </h1>
           </div>
