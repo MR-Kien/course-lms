@@ -27,6 +27,8 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
+  const [submitClickCount, setSubmitClickCount] = useState(0);
+  const [showAdminOption, setShowAdminOption] = useState(false);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -93,6 +95,19 @@ const SignIn = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Increment click count
+    const newClickCount = submitClickCount + 1;
+    setSubmitClickCount(newClickCount);
+    
+    // Show admin option after 10 clicks
+    if (newClickCount >= 10 && !showAdminOption) {
+      setShowAdminOption(true);
+      toast.info("🎉 Chúc mừng! Bạn đã mở khóa tùy chọn đăng ký Admin! Bây giờ bạn có thể chọn vai trò Admin trong dropdown.", {
+        position: "top-right",
+        autoClose: 8000,
+      });
+    }
     
     if (!validateForm()) {
       return;
@@ -261,6 +276,9 @@ const SignIn = () => {
           >
             <option value={USER_ROLES.STUDENT}>Học sinh</option>
             <option value={USER_ROLES.PARENT}>Phụ huynh</option>
+            {showAdminOption && (
+              <option value={USER_ROLES.ADMIN}>Admin</option>
+            )}
           </select>
 
           {/* Grade (for students) */}
@@ -388,6 +406,18 @@ const SignIn = () => {
           >
             {isLoading ? "Đang đăng ký..." : "Đăng ký"}
           </button>
+          
+          {/* Click counter indicator */}
+          {submitClickCount > 0 && (
+            <div className="text-center mt-2">
+              <span className="text-sm text-gray-500">
+                Đã click: {submitClickCount}/10 lần
+                {submitClickCount >= 10 && (
+                  <span className="text-green-600 font-semibold ml-2">🎉 Đã mở khóa Admin!</span>
+                )}
+              </span>
+            </div>
+          )}
 
           <div className="flex items-center gap-2 mt-4">
             <hr className="flex-1 border-gray-300" />
