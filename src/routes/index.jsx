@@ -75,13 +75,6 @@ const landingPage = {
   title: WEB_NAME,
 };
 
-const coursesPage = {
-  path: ENDPOINTS.LANDING.COURSES,
-  component: lazy(() => delayRoute()(import("../modules/courses/features/index"))),
-  title: `Khóa học | ${WEB_NAME}`,
-  Layout: LandingLayout,
-};
-
 const newsPage = {
   path: ENDPOINTS.LANDING.NEWS,
   component: lazy(() => delayRoute()(import("../modules/news/features/index"))),
@@ -213,7 +206,6 @@ export const privateRouteData = [];
 export const publicRoutesData = [
   // Landing Pages (Public)
   landingPage,
-  coursesPage,
   newsPage,
 
   // Auth Pages

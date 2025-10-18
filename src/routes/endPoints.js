@@ -11,10 +11,7 @@ export const ENDPOINTS = Object.freeze({
   // Landing Page (Public)
   LANDING: {
     HOME: "/",
-    COURSES: "/courses",
     NEWS: "/news",
-    ABOUT: "/about",
-    CONTACT: "/contact",
   },
   
   // Admin Panel
